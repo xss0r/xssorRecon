@@ -214,6 +214,197 @@ last_completed_option=1
 skip_order_check_for_option_4=false
 total_merged_urls=0
 
+
+# Function to run step 1 (Install all tools)
+install_tools() {
+    # Find the current directory path
+    CURRENT_DIR=$(pwd)
+    
+    echo -e "${BOLD_WHITE}You selected: Install all tools${NC}"
+    
+    show_progress "Installing dependencies"
+    sudo apt update
+    sudo apt-get install -y rsync zip unzip p7zip-full wget golang-go
+    sudo apt-get install terminator
+    sudo apt remove python3-structlog
+
+    # Set full permissions for the xss0rRecon folder and its contents
+    sudo chmod -R 777 "$CURRENT_DIR/xss0rRecon"
+
+    # Step 1: Install Python3 virtual environment and structlog in venv
+    show_progress "Installing python3-venv and setting up virtual environment"
+    sudo apt install python3-venv
+    python3 -m venv myenv
+    source myenv/bin/activate
+    sudo pip install structlog --root-user-action=ignore
+    sleep 3
+
+    # Step 2: Install the latest version of pip
+    show_progress "Installing/Upgrading pip"
+    sudo apt update && sudo apt install python3-pip -y
+    sudo pip3 install --upgrade pip --root-user-action=ignore
+    sleep 3
+
+    # Step 3: Install Go
+    show_progress "Installing Go"
+    wget https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
+    sudo tar -C /usr/local -xzf go1.22.5.linux-amd64.tar.gz
+    export PATH=$PATH:/usr/local/go/bin
+    go version
+    sudo rm -r go1.22.5.linux-amd64.tar.gz
+    sleep 3
+
+    # Step 4: Install Dnsbruter (Skip if the folder already exists)
+    if [ ! -d "Dnsbruter" ]; then
+        show_progress "Installing Dnsbruter"
+        sudo pip install --no-deps --force-reinstall git+https://github.com/RevoltSecurities/Dnsbruter.git --root-user-action=ignore
+        export PATH=$PATH:/home/kali/.local/bin  # Ensure dnsbruter is found
+        
+        # Install missing dependencies for dnsbruter
+        sudo pip install aiodns==3.1.1 alive-progress==3.1.5 colorama==0.4.6 --root-user-action=ignore
+        sleep 3
+    else
+        show_progress "Dnsbruter is already installed. Skipping installation."
+    fi
+
+    # Step 5: Install Subdominator (Skip if the folder already exists)
+    if [ ! -d "Subdominator" ]; then
+        show_progress "Installing Subdominator"
+        sudo pip install git+https://github.com/RevoltSecurities/Subdominator --root-user-action=ignore
+        sleep 3
+    else
+        show_progress "Subdominator is already installed. Skipping installation."
+    fi
+
+    # Step 6: Install SubProber (Skip if the folder already exists)
+    if [ ! -d "SubProber" ]; then
+        show_progress "Installing SubProber"
+        sudo pip install git+https://github.com/sanjai-AK47/Subprober.git --root-user-action=ignore
+        sleep 3
+    else
+        show_progress "SubProber is already installed. Skipping installation."
+    fi
+
+    # Step 7: Install GoSpider
+    show_progress "Installing GoSpider"
+    sudo apt install -y gospider
+    GO111MODULE=on sudo go install github.com/jaeles-project/gospider@latest
+    sleep 3
+
+    # Step 8: Install Hakrawler
+    show_progress "Installing Hakrawler"
+    sudo apt install -y hakrawler
+    sleep 3
+
+    # Step 9: Install Katana
+    show_progress "Installing Katana"
+    sudo go install github.com/projectdiscovery/katana/cmd/katana@latest
+
+    # Copy Katana to /usr/local/bin and /usr/bin
+    sudo cp ~/go/bin/katana /usr/local/bin/
+    sudo cp ~/go/bin/katana /usr/bin/
+    sudo cp ~/go/bin/gau /usr/local/bin/
+    sudo cp ~/go/bin/gau /usr/bin/
+    sudo cp ~/go/bin/waybackurls /usr/local/bin/
+    sudo cp ~/go/bin/waybackurls /usr/bin/
+    sleep 3
+
+    # Step 10: Install Waybackurls
+    show_progress "Installing Waybackurls"
+    sudo go install github.com/tomnomnom/waybackurls@latest
+    sudo cp ~/go/bin/waybackurls /usr/local/bin/
+    sudo cp ~/go/bin/waybackurls /usr/bin/
+    sleep 3
+
+    # Step 11: Install Gau
+    show_progress "Installing Gau"
+    sudo go install github.com/lc/gau/v2/cmd/gau@latest
+    sudo cp ~/go/bin/gau /usr/local/bin/
+    sudo cp ~/go/bin/gau /usr/bin/
+    sudo bash -c 'echo -e "[gau]\nwayback = true\ncommoncrawl = true\notx = false" > /root/.gau.toml'
+    sleep 3
+
+    # Step 12: Install Uro
+    show_progress "Installing Uro"
+    sudo pip install uro --root-user-action=ignore
+    sudo uro --help  # Ensure Uro runs with sudo
+    sleep 3
+
+    # Step 13: Install Arjun
+    show_progress "Installing Arjun"
+    sudo apt install -y arjun
+    sudo pip3 install arjun --root-user-action=ignore
+    sleep 3
+
+    # Step 14: Install Tmux
+    show_progress "Installing Tmux"
+    sudo apt install -y tmux
+    sudo apt --fix-broken install
+    sudo apt update
+    sleep 3
+
+    # Set specific permissions for installed tools
+    sudo chmod 755 /usr/local/bin/waybackurls
+    sudo chmod 755 /usr/local/bin/katana
+    sudo chmod 755 /usr/local/bin/gau
+    sudo chmod 755 /usr/local/bin/uro    
+
+    # Display installed tools
+    echo -e "${BOLD_BLUE}All tools have been successfully installed.${NC}"
+
+# Checking each tool with -h for verification
+echo -e "${BOLD_WHITE}Checking installed tools...${NC}"
+
+echo -e "${BOLD_WHITE}1. Dnsbruter:${NC}"
+dnsbruter -h > /dev/null 2>&1 && echo "Dnsbruter is installed" || echo "Dnsbruter is not installed correctly"
+
+echo -e "${BOLD_WHITE}2. Subdominator:${NC}"
+subdominator -h > /dev/null 2>&1 && echo "Subdominator is installed" || echo "Subdominator is not installed correctly"
+
+echo -e "${BOLD_WHITE}3. SubProber:${NC}"
+subprober -h > /dev/null 2>&1 && echo "SubProber is installed" || echo "SubProber is not installed correctly"
+
+echo -e "${BOLD_WHITE}4. GoSpider:${NC}"
+gospider -h > /dev/null 2>&1 && echo "GoSpider is installed" || echo "GoSpider is not installed correctly"
+
+echo -e "${BOLD_WHITE}5. Hakrawler:${NC}"
+hakrawler --help > /dev/null 2>&1 && echo "Hakrawler is installed" || echo "Hakrawler is not installed correctly"
+
+echo -e "${BOLD_WHITE}6. Katana:${NC}"
+katana -h > /dev/null 2>&1 && echo "Katana is installed" || echo "Katana is not installed correctly"
+
+echo -e "${BOLD_WHITE}7. Waybackurls:${NC}"
+waybackurls -h > /dev/null 2>&1 && echo "Waybackurls is installed" || echo "Waybackurls is not installed correctly"
+
+echo -e "${BOLD_WHITE}8. Gau:${NC}"
+gau -h > /dev/null 2>&1 && echo "Gau is installed" || echo "Gau is not installed correctly"
+
+echo -e "${BOLD_WHITE}9. Uro:${NC}"
+uro -h > /dev/null 2>&1 && echo "Uro is installed" || echo "Uro is not installed correctly"
+
+echo -e "${BOLD_WHITE}10. Arjun:${NC}"
+arjun -h > /dev/null 2>&1 && echo "Arjun is installed" || echo "Arjun is not installed correctly"
+
+echo -e "${BOLD_WHITE}11. Tmux:${NC}"
+echo "Tmux is installed (skipping check)"
+
+# Cyan and White message with tool links for manual installation
+echo -e "\n${BOLD_CYAN}If you encounter any issues or are unable to run any of the tools,${NC}"
+echo -e "${BOLD_WHITE}please refer to the following links for manual installation:${NC}"
+echo -e "${BOLD_WHITE}Waybackurls:${NC} https://github.com/tomnomnom/waybackurls"
+echo -e "${BOLD_WHITE}Gau:${NC} https://github.com/lc/gau"
+echo -e "${BOLD_WHITE}Uro:${NC} https://github.com/s0md3v/uro"
+echo -e "${BOLD_WHITE}Katana:${NC} https://github.com/projectdiscovery/katana"
+echo -e "${BOLD_WHITE}Hakrawler:${NC} https://github.com/hakluke/hakrawler"
+echo -e "${BOLD_WHITE}GoSpider:${NC} https://github.com/jaeles-project/gospider"
+echo -e "${BOLD_WHITE}Arjun:${NC} https://github.com/s0md3v/Arjun"
+echo -e "${BOLD_WHITE}Dnsbruter:${NC} https://github.com/RevoltSecurities/Dnsbruter"
+echo -e "${BOLD_WHITE}SubProber:${NC} https://github.com/RevoltSecurities/SubProber"
+echo -e "${BOLD_WHITE}Subdominator:${NC} https://github.com/RevoltSecurities/Subdominator"
+
+}
+
+
 # Function to run step 3 (Enumerate and filter domains)
 run_step_3() {
     echo -e "${BOLD_WHITE}You selected: Enumerate and filter domains for $domain_name${NC}"
@@ -536,7 +727,7 @@ run_step_6() {
     echo -e "${BOLD_BLUE}URLs prepared successfully and files created.${NC}"
     echo -e "${BOLD_BLUE}arjun-urls.txt and output-php-links.txt have been created.${NC}"
 
-    # Step 2: Running Arjun on clean URLs if arjun-urls.txt is present
+    # Step 2: Running Arjunhe on clean URLs if arjun-urls.txt is present
 if [ -s arjun-urls.txt ]; then
     show_progress "Running Arjun on clean URLs"
     arjun -i arjun-urls.txt -oT arjun_output.txt -t 10 -w parametri.txt || handle_error "Arjun command"
@@ -548,9 +739,14 @@ if [ -s arjun-urls.txt ]; then
         echo -e "${BOLD_BLUE}Arjun has completed running on the clean URLs.${NC}"
         echo -e "${BOLD_RED}Arjun discovered ${new_links_count} new links.${NC}"
 
-        # Step 3: Merging Arjun output with PHP links if Arjun output exists
-        show_progress "Merging Arjun output with PHP links"
-        cat arjun_output.txt output-php-links.txt > arjun-final.txt || handle_error "Merging Arjun output"
+        # Step 3: Check if output-php-links.txt exists before merging
+        if [ -f output-php-links.txt ]; then
+            show_progress "Merging Arjun output with PHP links"
+            cat arjun_output.txt output-php-links.txt > arjun-final.txt || handle_error "Merging Arjun output"
+        else
+            echo -e "${YELLOW}Warning: output-php-links.txt not found. Renaming arjun_output.txt to arjun-final.txt and proceeding.${NC}"
+            mv arjun_output.txt arjun-final.txt || handle_error "Renaming arjun_output.txt to arjun-final.txt"
+        fi
         sleep 5
     else
         echo -e "${RED}Arjun output file was not created. Checking for output-php-links.txt.${NC}"
@@ -569,38 +765,38 @@ else
     fi
 fi
 
-    # Step 4: Cleaning up temporary files if Arjun was successful
-    show_progress "Cleaning up temporary files"
-    if [[ -f arjun-urls.txt || -f arjun_output.txt || -f output-php-links.txt ]]; then
-        [[ -f arjun-urls.txt ]] && rm -r arjun-urls.txt
-        [[ -f arjun_output.txt ]] && rm -r arjun_output.txt
-        [[ -f output-php-links.txt ]] && rm -r output-php-links.txt
-        sleep 3
-    else
-        echo -e "${RED}No Arjun files to remove.${NC}"
-    fi
+# Step 4: Cleaning up temporary files if Arjun was successful
+show_progress "Cleaning up temporary files"
+if [[ -f arjun-urls.txt || -f arjun_output.txt || -f output-php-links.txt ]]; then
+    [[ -f arjun-urls.txt ]] && rm -r arjun-urls.txt
+    [[ -f arjun_output.txt ]] && rm -r arjun_output.txt
+    [[ -f output-php-links.txt ]] && rm -r output-php-links.txt
+    sleep 3
+else
+    echo -e "${RED}No Arjun files to remove.${NC}"
+fi
 
-    echo -e "${BOLD_BLUE}Files merged and cleanup completed. Final output saved as arjun-final.txt.${NC}"
+echo -e "${BOLD_BLUE}Files merged and cleanup completed. Final output saved as arjun-final.txt.${NC}"
 
-    # Step 5: Creating a new file for XSS testing
-    if [ -f arjun-final.txt ]; then
-        show_progress "Creating a new file for XSS testing"
-        cat "${domain_name}-links.txt" arjun-final.txt > urls-ready.txt || handle_error "Creating XSS testing file"
-        sleep 3
+# Step 5: Creating a new file for XSS testing
+if [ -f arjun-final.txt ]; then
+    show_progress "Creating a new file for XSS testing"
+    cat "${domain_name}-links.txt" arjun-final.txt > urls-ready.txt || handle_error "Creating XSS testing file"
+    sleep 3
 
-        # Removing the previous links file
-        show_progress "Removing the previous links file"
-        rm -r "${domain_name}-links.txt" || handle_error "Removing previous links file"
-        sleep 3
+    # Removing the previous links file
+    show_progress "Removing the previous links file"
+    rm -r "${domain_name}-links.txt" || handle_error "Removing previous links file"
+    sleep 3
 
-        echo -e "${BOLD_RED}XSS testing file created successfully as urls-ready.txt.${NC}"
-    else
-        echo -e "${RED}Skipping XSS testing file creation due to missing Arjun output.${NC}"
-        mv "${domain_name}-links.txt" urls-ready.txt || handle_error "Renaming ${domain_name}-links.txt"
-    fi
+    echo -e "${BOLD_RED}XSS testing file created successfully as urls-ready.txt.${NC}"
+else
+    echo -e "${RED}Skipping XSS testing file creation due to missing Arjun output.${NC}"
+    mv "${domain_name}-links.txt" urls-ready.txt || handle_error "Renaming ${domain_name}-links.txt"
+fi
 
-    # Automatically start step 7 after completing step 6
-    run_step_7
+# Automatically start step 7 after completing step 6
+run_step_7
 }
 
 # Function to run step 7 (Getting ready for XSS & URLs with query strings)
@@ -732,6 +928,8 @@ run_step_8() {
     fi
 }
 
+# Main script logic
+
 while true; do
     # Display options
     display_options
@@ -747,149 +945,20 @@ while true; do
 
     case $choice in
         1)
-
-            echo -e "${BOLD_WHITE}You selected: Install all tools${NC}"
-show_progress "Installing dependencies"
-sudo apt update || handle_error_with_solution "apt update" "Try running: sudo apt update manually."
-sudo apt-get install -y rsync zip unzip p7zip-full wget golang-go || handle_error_with_solution "Installing dependencies" "Try running: sudo apt-get install -y rsync zip unzip p7zip-full wget golang-go manually."
-sudo apt-get install terminator || handle_error_with_solution "Installing terminator" "Try running: sudo apt-get install terminator manually."
-sudo apt remove python3-structlog || handle_error_with_solution "Removing python3-structlog" "Try running: sudo apt remove python3-structlog manually."
-
-# Step 1: Installing latest structlog, with error handling
-show_progress "Installing the latest version of structlog"
-pip3 install --upgrade structlog || handle_error_with_solution "Installing structlog" "Try running: pip3 install --upgrade structlog manually."
-sleep 3
-
-# Step 2: Install the latest version of pip, with error handling
-show_progress "Installing/Upgrading pip"
-sudo apt update && sudo apt install python3-pip -y || handle_error_with_solution "apt install python3-pip" "Try running: sudo apt install python3-pip manually."
-pip3 install --upgrade pip || handle_error_with_solution "Upgrading pip" "Try running: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py manually."
-sleep 3
-
-# Step 3: Install Go
-show_progress "Installing Go"
-wget https://go.dev/dl/go1.22.5.linux-amd64.tar.gz || handle_error_with_solution "Go Download" "Try running: wget https://go.dev/dl/go1.22.5.linux-amd64.tar.gz  manually."
-sudo tar -C /usr/local -xzf go1.22.5.linux-amd64.tar.gz || handle_error_with_solution "Go Install" "Try running: sudo tar -C /usr/local -xzf go1.22.5.linux-amd64.tar.gz manually."
-export PATH=$PATH:/usr/local/go/bin
-go version || handle_error_with_solution "Go Version" "Try running: export PATH=\$PATH:/usr/local/go/bin && go version manually."
-sudo rm -r go1.22.5.linux-amd64.tar.gz || handle_error_with_solution "Deleting Go Tarball" "Try running: sudo rm -r  go1.22.5.linux-amd64.tar.gz manually."
-sleep 3
-
-# Step 4: Install Dnsbruter (Skip if the folder already exists)
-if [ ! -d "Dnsbruter" ]; then
-    show_progress "Installing Dnsbruter"
-    pip install --no-deps --force-reinstall git+https://github.com/RevoltSecurities/Dnsbruter.git || handle_error_with_solution "Dnsbruter" "Try running: git clone https://github.com/RevoltSecurities/Dnsbruter.git && cd Dnsbruter && pip install . && python setup.py install manually."
-    sleep 3
-else
-    show_progress "Dnsbruter is already installed. Skipping installation."
-fi
-check_command "dnsbruter"
-
-# Step 5: Install Subdominator (Skip if the folder already exists)
-if [ ! -d "Subdominator" ]; then
-    show_progress "Installing Subdominator"
-    pip install git+https://github.com/RevoltSecurities/Subdominator || handle_error_with_solution "Subdominator" "Try running: git clone https://github.com/RevoltSecurities/Subdominator.git && cd Subdominator && pip install . && python setup.py install manually."
-    sleep 3
-else
-    show_progress "Subdominator is already installed. Skipping installation."
-fi
-check_command "subdominator"
-
-# Step 6: Install SubProber (Skip if the folder already exists)
-if [ ! -d "SubProber" ]; then
-    show_progress "Installing SubProber"
-    pip install git+https://github.com/sanjai-AK47/Subprober.git || handle_error_with_solution "SubProber" "Try running: git clone https://github.com/sanjai-AK47/SubProber.git && cd SubProber && pip install . && python setup.py install manually."
-    sleep 3
-else
-    show_progress "SubProber is already installed. Skipping installation."
-fi
-check_command "subprober"
-
-# Step 7: Install GoSpider
-show_progress "Installing GoSpider"
-sudo apt install -y gospider || handle_error_with_solution "GoSpider" "Try running: sudo apt install -y gospider manually."
-GO111MODULE=on go install github.com/jaeles-project/gospider@latest || handle_error_with_solution "GoSpider (Go Install)" "Try running: GO111MODULE=on go install github.com/jaeles-project/gospider@latest manually."
-sleep 3
-check_command "gospider"
-
-# Step 8: Install Hakrawler
-show_progress "Installing Hakrawler"
-sudo apt install -y hakrawler || handle_error_with_solution "Hakrawler" "Try running: sudo apt install -y hakrawler manually."
-sleep 3
-check_command "hakrawler"
-
-# Step 9: Install Katana
-show_progress "Installing Katana"
-go install github.com/projectdiscovery/katana/cmd/katana@latest || handle_error_with_solution "Katana Installation" "Try running: go install github.com/projectdiscovery/katana/cmd/katana@latest manually."
-
-# Copy Katana to /usr/local/bin
-sudo cp ~/go/bin/katana /usr/local/bin/ || handle_error_with_solution "Katana Copy to /usr/local/bin" "Try running: sudo cp ~/go/bin/katana /usr/local/bin manually."
-
-# Copy Katana to /usr/bin
-sudo cp ~/go/bin/katana /usr/bin/ || handle_error_with_solution "Katana Copy to /usr/bin" "Try running: sudo cp ~/go/bin/katana /usr/bin manually."
-sleep 3
-check_command "katana"
-
-# Step 10: Install Waybackurls
-show_progress "Installing Waybackurls"
-go install github.com/tomnomnom/waybackurls@latest || handle_error_with_solution "Waybackurls" "Try running: go install github.com/tomnomnom/waybackurls@latest manually."
-cp ~/go/bin/waybackurls /usr/local/bin/ || handle_error_with_solution "Waybackurls Copy" "Try running: cp ~/go/bin/waybackurls /usr/local/bin manually."
-cp ~/go/bin/waybackurls /usr/bin/ || handle_error_with_solution "Waybackurls Copy" "Try running: cp ~/go/bin/waybackurls /usr/bin manually."
-sleep 3
-check_command "waybackurls"
-
-# Step 11: Install Gau
-show_progress "Installing Gau"
-go install github.com/lc/gau/v2/cmd/gau@latest || handle_error_with_solution "Gau" "Try running: go install github.com/lc/gau/v2/cmd/gau@latest manually."
-cp ~/go/bin/gau /usr/local/bin/ || handle_error_with_solution "Gau Copy" "Try running: cp ~/go/bin/gau /usr/local/bin manually."
-cp ~/go/bin/gau /usr/bin/ || handle_error_with_solution "Gau Copy" "Try running: cp ~/go/bin/gau /usr/bin manually."
-sudo bash -c 'echo -e "[gau]\nwayback = true\ncommoncrawl = true\notx = false" > /root/.gau.toml'
-sleep 3
-check_command "gau"
-
-# Step 12: Install Uro
-show_progress "Installing Uro"
-pip install uro || handle_error_with_solution "Uro" "Try running: pip install uro manually."
-sleep 3
-check_command "uro"
-
-# Step 13: Install Arjun
-show_progress "Installing Arjun"
-sudo apt install -y arjun || handle_error_with_solution "Arjun" "Try running: sudo apt install -y arjun manually."
-pip3 install arjun || handle_error_with_solution "Arjun (pip3)" "Try running: pip3 install arjun manually."
-sleep 3
-check_command "arjun"
-
-# Step 14: Install Tmux
-show_progress "Installing Tmux"
-sudo apt install -y tmux || handle_error_with_solution "Tmux" "Try running: sudo apt install -y tmux manually."
-sudo apt --fix-broken install || handle_error_with_solution "Fix Broken Install" "Try running: sudo apt --fix-broken install manually."
-sudo apt update || handle_error_with_solution "apt update" "Try running: sudo apt update manually."
-sleep 3
-
-echo -e "${BOLD_BLUE}All tools have been successfully installed.${NC}"
-echo "1. Dnsbruter"
-echo "2. Subdominator"
-echo "3. SubProber"
-echo "4. GoSpider"
-echo "5. Hakrawler"
-echo "6. Katana"
-echo "7. Waybackurls"
-echo "8. Gau"
-echo "9. Uro"
-echo "10. Arjun"
-echo "11. Tmux"
+            install_tools
+            last_completed_option=1
             ;;
         2)
             read -p "Please enter a domain name (example.com): " domain_name
             echo -e "${BOLD_WHITE}You selected: Domain name set to $domain_name${NC}"
-            run_step_3  # Automatically start step 3 after setting the domain
+            last_completed_option=2
             ;;
         3)
             if [ -z "$domain_name" ]; then
                 echo "Domain name is not set. Please select option 2 to set the domain name."
             else
                 run_step_3
+                last_completed_option=3
             fi
             ;;
         4)
@@ -897,6 +966,7 @@ echo "11. Tmux"
                 echo "Domain name is not set. Please select option 2 to set the domain name."
             else
                 run_step_4
+                last_completed_option=4
             fi
             ;;
         5)
@@ -904,6 +974,7 @@ echo "11. Tmux"
                 echo "Domain name is not set. Please select option 2 to set the domain name."
             else
                 run_step_5
+                last_completed_option=5
             fi
             ;;
         6)
@@ -911,6 +982,7 @@ echo "11. Tmux"
                 echo "Domain name is not set. Please select option 2 to set the domain name."
             else
                 run_step_6
+                last_completed_option=6
             fi
             ;;
         7)
@@ -918,6 +990,7 @@ echo "11. Tmux"
                 echo "Domain name is not set. Please select option 2 to set the domain name."
             else
                 run_step_7
+                last_completed_option=7
             fi
             ;;
         8)
@@ -925,6 +998,7 @@ echo "11. Tmux"
                 echo "Domain name is not set. Please select option 2 to set the domain name."
             else
                 run_step_8
+                last_completed_option=8
             fi
             ;;
         9)
