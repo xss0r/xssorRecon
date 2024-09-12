@@ -237,6 +237,7 @@ install_tools() {
     python3 -m venv myenv
     source myenv/bin/activate
     sudo pip install structlog --root-user-action=ignore
+    pip install requests
     sleep 3
 
     # Step 2: Install the latest version of pip
@@ -414,39 +415,51 @@ run_step_3() {
     dnsbruter -d "$domain_name" -w subs-dnsbruter-small.txt -c 200 -wt 100 -o output-dnsbruter.txt -ws wild.txt || handle_error "dnsbruter"
     sleep 5
 
-    # Check if output-dnsbruter.txt was created
-    if [ ! -f "output-dnsbruter.txt" ]; then
-        echo "Error: output-dnsbruter.txt not found. The dnsbruter command may have failed."
-        exit 1
-    fi
-
     # Step 2: Active brute crawling domains
     show_progress "Active brute crawling domains"
     subdominator -d "$domain_name" -o output-subdominator.txt || handle_error "subdominator"
     sleep 5
 
-    # Check if output-subdominator.txt was created
-    if [ ! -f "output-subdominator.txt" ]; then
-        echo "Error: output-subdominator.txt not found. The subdominator command may have failed."
-        exit 1
+    # Step 3: Checking if output-dnsbruter.txt was created
+    if [ ! -f "output-dnsbruter.txt" ]; then
+        echo "Error: output-dnsbruter.txt not found. The dnsbruter command may have failed."
+        
+        # If dnsbruter failed, use only subdominator output
+        if [ -f "output-subdominator.txt" ]; then
+            echo "Moving output-subdominator.txt to ${domain_name}-domains.txt"
+            mv output-subdominator.txt "${domain_name}-domains.txt"
+        else
+            echo "Error: output-subdominator.txt not found. The subdominator command may have also failed."
+            exit 1
+        fi
+    else
+        # Check if output-subdominator.txt exists, and if both exist, merge the results
+        if [ -f "output-subdominator.txt" ]; then
+            # Step 4: Merging passive and active results into one file
+            show_progress "Merging passive and active results into one file"
+            cat output-dnsbruter.txt output-subdominator.txt > "${domain_name}-domains.txt" || handle_error "Merging domains"
+        else
+            echo "Error: output-subdominator.txt not found. Proceeding with output-dnsbruter.txt only."
+            mv output-dnsbruter.txt "${domain_name}-domains.txt"
+        fi
     fi
-
-    # Step 3: Merging passive and active into one file
-    show_progress "Merging passive and active results into one file"
-    cat output-dnsbruter.txt output-subdominator.txt > "${domain_name}-domains.txt" || handle_error "Merging domains"
-    sleep 5
 
     # Show total subdomains after merging
     total_subdomains=$(wc -l < "${domain_name}-domains.txt")
-    echo -e "${RED}Total subdomains after merging: $total_subdomains${NC}"
+    echo -e "${RED}Total subdomains after processing: $total_subdomains${NC}"
     sleep 5
 
-    # Step 4: Removing old txt files
+    # Step 5: Removing old temporary files
     show_progress "Removing old temporary files"
-    rm -r output-dnsbruter.txt output-subdominator.txt || handle_error "Removing temporary files"
+    if [ -f "output-dnsbruter.txt" ]; then
+        rm output-dnsbruter.txt || handle_error "Removing output-dnsbruter.txt"
+    fi
+    if [ -f "output-subdominator.txt" ]; then
+        rm output-subdominator.txt || handle_error "Removing output-subdominator.txt"
+    fi
     sleep 3
 
-    # Step 5: Removing duplicate domains
+    # Step 6: Removing duplicate domains
     show_progress "Removing duplicate domains"
     initial_count=$(wc -l < "${domain_name}-domains.txt")
     awk '{sub(/^https?:\/\//, "", $0); sub(/^www\./, "", $0); if (!seen[$0]++) print}' "${domain_name}-domains.txt" > "unique-${domain_name}-domains.txt" || handle_error "Removing duplicates"
