@@ -1,4 +1,3 @@
-Here’s a text for your GitHub README.md:
 xss0rRecon
 
 Welcome to the xss0rRecon tool repository! 🚀
