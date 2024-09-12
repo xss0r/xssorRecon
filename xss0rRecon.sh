@@ -897,7 +897,7 @@ if [ -f "reflection.py" ]; then
 
             # Running URO for xss-urls.txt file
             echo -e "${BOLD_BLUE}Running URO for xss-urls.txt file...${NC}"
-            uro -i xss-urls.txt -o xss-urls1337.txt
+            uro -i xss-urls.txt -o xss-urls1337.txt --blacklist php asp aspx cfm jsp
             rm -r xss-urls.txt
             mv xss-urls1337.txt xss-urls.txt
             sleep 5
