@@ -926,17 +926,20 @@ run_step_8() {
     echo -e "${BOLD_WHITE}You selected: xss0r RUN for $domain_name${NC}"
 
     # Check if xss-checker and xss-urls.txt files exist
-    if [ -f "xss-checker" ] && [ -f "xss-urls.txt"]; then
+    if [ -f "xss-checker" ] && [ -f "xss-urls.txt" ]; then
         show_progress "Running xss0r for XSS vulnerabilities"
         ./xss-checker --urls xss-urls.txt --payloads payloads.txt --shuffle --threads 9 || handle_error "xss0r run"
         sleep 5
         echo -e "${BOLD_BLUE}xss0r completed. Check the output files for results.${NC}"
     else
+        # Check if xss-checker file is missing
         if [ ! -f "xss-checker" ]; then
-            echo -e "${RED}There is no xss-checker file in the current directory. Please make sure to run the script in the correct directory.${NC}"
+            echo -e "${RED}The xss0r Tool is not present in the current directory. Please ensure the xss0r tool is placed in the directory and run the script again. Alternatively, you can download or purchase the tool from ibrahimxss.store. After obtaining the tool, execute the xss-checker to enter your API key, and then proceed with the xss0rRecon tool.${NC}"
         fi
+        
+        # Check if xss-urls.txt file is missing
         if [ ! -f "xss-urls.txt" ]; then
-            echo -e "${RED}There is no xss-urls.txt file in the current directory. Please make sure to run the script in the correct directory.${NC}"
+            echo -e "${RED}The xss-urls.txt file is not present in the current directory. Please make sure the file is generated or placed in the directory and try again.${NC}"
         fi
     fi
 }
