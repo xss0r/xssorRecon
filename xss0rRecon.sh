@@ -206,6 +206,29 @@ echo -e "${CYAN}sudo su -                                   # Switch to root use
 
 echo -e "${CYAN}For more information about VPS configuration, please visit the official Contabo page or reach out to support.${NC}"
 
+
+
+# Steps for installing xss0r on VPS
+echo -e "${CYAN}#### Steps for installing xss0r on VPS:${NC}"
+
+echo -e "${CYAN}1. Install Cockpit                         ${NC} # Install Cockpit for VPS management"
+echo -e "${CYAN}2. Install Debian                          ${NC} # Install the Debian OS"
+echo -e "${CYAN}3. nano /etc/apt/sources.list              ${NC} # Edit source list in Debian OS"
+echo -e "${CYAN}4. deb http://asi-fs-d.contabo.net/debian bookworm main non-free-firmware  ${NC} # Change 'bookworm' to 'testing'"
+echo -e "${CYAN}5. deb-src http://asi-fs-d.contabo.net/debian bookworm main non-free-firmware ${NC} # Change 'bookworm' to 'testing'"
+echo -e "${CYAN}6. Update & Upgrade                        ${NC} # sudo apt install gnome -y"
+echo -e "${CYAN}7. Install Kali OS                         ${NC} # Not needed any changes except updates & upgrades"
+echo -e "${CYAN}8. Upload all files to your VPS            ${NC} # Upload xss0r + xss0rRecon files"
+echo -e "${CYAN}9. chmod +x xss-checker                       ${NC} # Add execute permission to the xss0r tool"
+echo -e "${CYAN}10. chmod +x chromedriver                      ${NC} # Add execute permission to chromedriver"
+echo -e "${CYAN}11. Install required Chrome version from the eBook ${NC} # Install the required Chrome version as outlined in the eBook"
+echo -e "${CYAN}12. Run xss0r and enter API License         ${NC} # Run xss0r tool and enter your API license"
+echo -e "${CYAN}13. Run xss0rRecon and install all tools   ${NC} # Run xss0rRecon and install necessary tools"
+echo -e "${CYAN}14. Ensure all files in the same folder    ${NC} # Make sure all files are inside the same folder"
+echo -e "${CYAN}15. Add --no-sandbox option to Chrome      ${NC} # Add the --no-sandbox option to Google Chrome"
+echo -e "${CYAN}16. Run RDP GUI, launch Chrome, set default browser ${NC} # Run RDP GUI, run Chrome from terminal, set as default and open any site"
+echo -e "${CYAN}17. Run xss0r tool                         ${NC} # Launch and run xss0r tool"
+
 }
 
 # Initialize a variable for the domain name
