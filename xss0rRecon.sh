@@ -511,14 +511,15 @@ run_step_3() {
     echo -e "${BOLD_BLUE}Enumeration and filtering process completed successfully. Final output saved as ${domain_name}-domains.txt.${NC}"
 
     # New message for the user with Y/N option
-    read -p "$(echo -e "${BOLD_WHITE}Your domain file has been created. Would you like to continue scanning your target domain, including all its subdomains? If so, please enter 'Y'. If you prefer to modify the domain file first, enter 'N', and you can manually proceed with step 4 afterwards. Do you want to continue scanning with all subdomains (Y/N)?: ${NC}")" continue_scan
-    if [[ "$continue_scan" =~ ^[Yy]$ ]]; then
-        skip_order_check_for_option_4=true
-        run_step_4  # Automatically continue to step 4
-    else
-        echo -e "${BOLD_WHITE}Please edit your file ${domain_name}-domains.txt and remove any unwanted subdomains before continuing.${NC}"
-        skip_order_check_for_option_4=true
-    fi
+read -p "$(echo -e "${BOLD_WHITE}Your domain file has been created. Would you like to continue scanning your target domain, including all its subdomains? If so, please enter 'Y'. If you prefer to modify the domain file first, so you can delete these and add your domains, enter 'N', and you can manually proceed with step 4 afterwards. Do you want to continue scanning with all subdomains (Y/N)?: ${NC}")" continue_scan
+if [[ "$continue_scan" =~ ^[Yy]$ ]]; then
+    skip_order_check_for_option_4=true
+    echo -e "${BOLD_BLUE}Automatically continuing with step 4: Crawl and filter URLs...${NC}"
+    run_step_4  # Automatically continue to step 4
+else
+    echo -e "${BOLD_WHITE}Please edit your file ${domain_name}-domains.txt and remove any unwanted subdomains before continuing.${NC}"
+    skip_order_check_for_option_4=true
+fi
 }
 
 # Function to run step 4 (Crawl and filter URLs)
@@ -593,26 +594,41 @@ run_step_4() {
     sleep 3
 
     # Step 9: Remove all previous files
-    show_progress "Removing all previous files"
-    rm -r "${domain_name}-gospider1.txt" "${domain_name}-hakrawler1.txt" "${domain_name}-katana.txt" "${domain_name}-waybackurls.txt" "${domain_name}-gau.txt"
-    sleep 3
+show_progress "Removing all previous files"
+sudo rm -r "${domain_name}-gospider1.txt" "${domain_name}-hakrawler1.txt" "${domain_name}-katana.txt" "${domain_name}-waybackurls.txt" "${domain_name}-gau.txt"
+sleep 3
 
-    # Step 10: Merge all URO files into one final file
-    show_progress "Merging all URO files into one final file"
-    cat urogospider.txt urohakrawler.txt urokatana.txt urowaybackurls.txt urogau.txt > "${domain_name}-links-final.txt"
+# Step 10: Merge all URO files into one final file
+show_progress "Merging all URO files into one final file"
+cat urogospider.txt urohakrawler.txt urokatana.txt urowaybackurls.txt urogau.txt > "${domain_name}-links-final.txt"
     
-    # Display the number of URLs in the final merged file
-    total_merged_urls=$(wc -l < "${domain_name}-links-final.txt")
-    echo -e "${BOLD_WHITE}Total URLs merged: ${RED}${total_merged_urls}${NC}"
-    sleep 3
+# Create new folder 'urls' and assign permissions
+show_progress "Creating 'urls' directory and setting permissions"
+sudo mkdir -p urls
+sudo chmod 777 urls
 
-    # Step 11: Remove all 5 previous files
-    show_progress "Removing all 5 previous files"
-    rm -r urokatana.txt urohakrawler.txt urowaybackurls.txt urogau.txt urogospider.txt
-    sleep 3
+# Copy the final file to the 'urls' folder
+show_progress "Copying ${domain_name}-links-final.txt to 'urls' directory"
+sudo cp "${domain_name}-links-final.txt" urls/
 
-    # Automatically start step 5 after completing step 4
-    run_step_5
+# Display professional message about the URLs
+echo -e "${BOLD_WHITE}All identified URLs have been successfully saved in the newly created 'urls' directory.${NC}"
+echo -e "${CYAN}These URLs represent potential targets that were not filtered out during the previous steps.${NC}"
+echo -e "${CYAN}You can use the file 'urls/${domain_name}-links-final.txt' for further vulnerability testing with tools like Nuclei or any other inspection frameworks to identify additional vulnerabilities.${NC}"
+echo -e "${CYAN}We are now continuing with our main purpose of XSS filtration and vulnerability identification.${NC}"
+
+# Display the number of URLs in the final merged file
+total_merged_urls=$(wc -l < "${domain_name}-links-final.txt")
+echo -e "${BOLD_WHITE}Total URLs merged: ${RED}${total_merged_urls}${NC}"
+sleep 3
+
+# Step 11: Remove all 5 previous files
+show_progress "Removing all 5 previous files"
+sudo rm -r urokatana.txt urohakrawler.txt urowaybackurls.txt urogau.txt urogospider.txt
+sleep 3
+
+# Automatically start step 5 after completing step 4
+run_step_5
 }
 
 # Function to run step 5 (Filtering all)
@@ -928,18 +944,25 @@ run_step_8() {
     # Check if xss-checker and xss-urls.txt files exist
     if [ -f "xss-checker" ] && [ -f "xss-urls.txt" ]; then
         show_progress "Running xss0r for XSS vulnerabilities"
-        ./xss-checker --urls xss-urls.txt --payloads payloads.txt --shuffle --threads 9 || handle_error "xss0r run"
+        ./xss-checker --urls xss-urls.txt --payloads payloads.txt --shuffle --threads 9
+        if [[ $? -ne 0 ]]; then  # Check if xss-checker command failed
+            echo -e "${RED}The xss0r Tool encountered an error during execution.${NC}"
+            exit 1
+        fi
         sleep 5
         echo -e "${BOLD_BLUE}xss0r completed. Check the output files for results.${NC}"
     else
-        # Check if xss-checker file is missing
+        # Custom error message when xss-checker is missing
         if [ ! -f "xss-checker" ]; then
-            echo -e "${RED}The xss0r Tool is not present in the current directory. Please ensure the xss0r tool is placed in the directory and run the script again. Alternatively, you can download or purchase the tool from ibrahimxss.store. After obtaining the tool, execute the xss-checker to enter your API key, and then proceed with the xss0rRecon tool.${NC}"
+            echo -e "${RED}The xss0r Tool is not present in the current directory.${NC}"
+            echo -e "${CYAN}Please ensure the xss0r tool is placed in the directory and run the script again.${NC}"
+            echo -e "${BOLD_WHITE}Alternatively, you can download or purchase the tool from ibrahimxss.store.${NC}"
+            echo -e "${BOLD_WHITE}After obtaining the tool, execute the xss-checker to enter your API key, and then proceed with the xss0rRecon tool.${NC}"
         fi
         
         # Check if xss-urls.txt file is missing
         if [ ! -f "xss-urls.txt" ]; then
-            echo -e "${RED}The xss-urls.txt file is not present in the current directory. Please make sure the file is generated or placed in the directory and try again.${NC}"
+            echo -e "${RED}The xss-urls.txt file is not present in the current directory. Please make sure the file is generated or placed in the directory and try again. Alternatively, you can download or purchase the tool from ibrahimxss.store. After obtaining the tool, execute the xss-checker to enter your API key, and then proceed with the xss0rRecon tool.${NC}"
         fi
     fi
 }
@@ -968,6 +991,16 @@ while true; do
             read -p "Please enter a domain name (example.com): " domain_name
             echo -e "${BOLD_WHITE}You selected: Domain name set to $domain_name${NC}"
             last_completed_option=2
+            
+            # Automatically proceed to Step 3 after setting the domain name
+            read -p "$(echo -e "${BOLD_WHITE}Do you want to proceed with domain enumeration and filtering for $domain_name (Y/N)?: ${NC}")" proceed_to_step_3
+            if [[ "$proceed_to_step_3" =~ ^[Yy]$ ]]; then
+                echo -e "${BOLD_BLUE}Automatically continuing with step 3: Enumerate and filter domains for $domain_name...${NC}"
+                run_step_3
+                last_completed_option=3
+            else
+                echo -e "${BOLD_WHITE}You can manually start Step 3 whenever you are ready.${NC}"
+            fi
             ;;
         3)
             if [ -z "$domain_name" ]; then
