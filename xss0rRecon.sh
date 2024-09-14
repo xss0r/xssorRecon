@@ -227,7 +227,8 @@ echo -e "${CYAN}13. Run xss0rRecon and install all tools   ${NC} # Run xss0rReco
 echo -e "${CYAN}14. Ensure all files in the same folder    ${NC} # Make sure all files are inside the same folder"
 echo -e "${CYAN}15. Add --no-sandbox option to Chrome      ${NC} # Add the --no-sandbox option to Google Chrome"
 echo -e "${CYAN}16. Run RDP GUI, launch Chrome, set default browser ${NC} # Run RDP GUI, run Chrome from terminal, set as default and open any site"
-echo -e "${CYAN}17. Run xss0r tool                         ${NC} # Launch and run xss0r tool"
+echo -e "${CYAN}17. Exit from RDP GUI and back to Cockpit terminal  ${NC} # Close RDP and back to your terminal"
+echo -e "${CYAN}18. Run xss0r tool                         ${NC} # Launch and run xss0r tool"
 
 }
 
@@ -425,6 +426,34 @@ echo -e "${BOLD_WHITE}Arjun:${NC} https://github.com/s0md3v/Arjun"
 echo -e "${BOLD_WHITE}Dnsbruter:${NC} https://github.com/RevoltSecurities/Dnsbruter"
 echo -e "${BOLD_WHITE}SubProber:${NC} https://github.com/RevoltSecurities/SubProber"
 echo -e "${BOLD_WHITE}Subdominator:${NC} https://github.com/RevoltSecurities/Subdominator"
+
+# Adding extra space for separation
+echo -e "\n\n"
+
+# Bold blue message surrounded by a rectangle of lines with extra spacing
+echo -e "${BOLD_BLUE}=============================================================================================${NC}"
+echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
+echo -e "${BOLD_BLUE}|  NOTE: To use this tool, you must have the xss-checker tool, which is an XSS detection     |${NC}"
+echo -e "${BOLD_BLUE}|  and exploitation tool for all types of XSS attacks, in the same directory.                |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
+echo -e "${BOLD_BLUE}|  Alongside the xss-checker tool, you'll also need two wordlists and a Python reflection    |${NC}"
+echo -e "${BOLD_BLUE}|  detection tool. All of these can be found in any of the XSS plans available on the site.  |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
+echo -e "${BOLD_BLUE}|  You can get them by visiting: https://ibrahimxss.store/ and purchasing any plan that      |${NC}"
+echo -e "${BOLD_BLUE}|  fits your needs.                                                                         |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
+echo -e "${BOLD_BLUE}|  If you already have a plan, simply copy the xss-checker tool, the wordlists, and the      |${NC}"
+echo -e "${BOLD_BLUE}|  reflection detection tool into the same folder where your xss0rRecon tool is located.     |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
+echo -e "${BOLD_BLUE}|  Alternatively, if you don't have a plan or the tools, you can use the PRO plan for free   |${NC}"
+echo -e "${BOLD_BLUE}|  for 5 days each month from the 10th to the 15th.                                         |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
+echo -e "${BOLD_BLUE}|  The release of the key is posted on the homepage banner at ibrahimxss.store, but this     |${NC}"
+echo -e "${BOLD_BLUE}|  option is only available for those who have not yet tested the tool.                      |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
+echo -e "${BOLD_BLUE}=============================================================================================${NC}"
+
+echo -e "\n\n"
 
 }
 
