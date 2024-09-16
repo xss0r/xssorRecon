@@ -76,6 +76,7 @@ display_options() {
     echo -e "${YELLOW}8: xss0r RUN${NC}"
     echo -e "${YELLOW}9: Exit${NC}"
     echo -e "${YELLOW}10: VPS server xss0r help${NC}"
+    echo -e "${YELLOW}11: Path-based XSS${NC}" # New Option 11 added here
 }
 
 # Function to display VPS server xss0r help information with better formatting and crystal-like color
@@ -1020,12 +1021,163 @@ run_step_8() {
     fi
 }
 
+ Function for Path-based XSS
+run_path_based_xss() {
+    echo -e "${BOLD_WHITE}You selected: Path-based XSS${NC}"
+
+    # List all available domain files in the directory
+    echo -e "${BOLD_WHITE}Available domain files:${NC}"
+    ls *-ALL-links.txt  # List all files that end with -ALL-links.txt
+    
+    # Prompt the user to enter the domain name (without the -ALL-links.txt part)
+    read -p "Please enter the domain name (just the base, without '-ALL-links.txt'): " domain_name
+
+    # Debugging output to check if domain_name is correctly set
+    echo "Debug: The domain name is set to '${domain_name}'"
+
+    # Check if the required file exists
+    if [ ! -f "${domain_name}-ALL-links.txt" ]; then
+        echo -e "${CYAN}Error: There is no file available for scanning path-based XSS.${NC}"
+        echo -e "${CYAN}It appears that the necessary file, ${domain_name}-ALL-links.txt, has not been generated.${NC}"
+        echo -e "${BOLD_WHITE}This file is created after completing the crawling and filtering processes.${NC}"
+        echo -e "${BOLD_WHITE}Please return to Option 2 and follow the full process, including crawling and URL filtering.${NC}"
+        return
+    fi
+
+    # Function to count and display the number of URLs after filtering
+    count_urls() {
+        local file=$1
+        local message=$2
+        local count=$(sudo wc -l < "$file")
+        echo -e "${CYAN}${message} After filtering, the number of URLs is: ${RED}${count}${NC}"
+    }
+
+    # Step 0: Initial count of URLs in the main target file
+    show_progress "Analyzing the initial number of URLs in ${domain_name}-ALL-links.txt..."
+    count_urls "${domain_name}-ALL-links.txt" "Initial URL count before filtration."
+
+    # Step 1: Filtering duplicate URLs
+    show_progress "Filtering duplicate URLs..."
+    sudo awk '{ gsub(/^https:/, "http:"); gsub(/^http:\/\/www\./, "http://"); if (!seen[$0]++) print }' "${domain_name}-ALL-links.txt" | sudo tr -d '\r' > "path1.txt"
+    sleep 3
+    count_urls "path1.txt" "Duplicate URLs filtered successfully."
+
+    # Step 1.1: Filtering similar URLs with the same base path
+    show_progress "Filtering similar URLs with similar base paths..."
+    awk -F'/' '{base_path=$1"/"$2"/"$3"/"$4"/"$5"/"$6; if (!seen_base[base_path]++) print $0}' path1.txt > path1-filtered.txt
+    sleep 3
+    count_urls "path1-filtered.txt" "Similar URLs with the same base path filtered."
+
+    # Step 2: Removing 99% similar parameters
+    show_progress "Removing 99% similar parameters..."
+    awk -F'[?&]' '{gsub(/:80/, "", $1); base_url=$1; domain=base_url; params=""; for (i=2; i<=NF; i++) {split($i, kv, "="); if (!seen[domain kv[1]]++) {params=params kv[1]; if (i<NF) params=params "&";}} full_url=base_url"?"params; if (!param_seen[full_url]++) print $0 > "path3.txt";}' path1-filtered.txt
+    sleep 5
+    count_urls "path3.txt" "Parameters processed and URLs filtered."
+
+    # Step 3: Including all domains from the URLs without filtering
+    show_progress "Including all domains from the URLs..."
+    cat "path3.txt" > "path4.txt"
+    sleep 3
+    count_urls "path4.txt" "All domains included successfully."
+
+    # Step 4: Filtering extensions from the URLs
+    show_progress "Filtering extensions from the URLs..."
+    cat path4.txt | sudo grep -E -v '\.css($|\s|\?|&|#|/|\.)|\.jpg($|\s|\?|&|#|/|\.)|\.JPG($|\s|\?|&|#|/|\.)|\.PNG($|\s|\?|&|#|/|\.)|\.GIF($|\s|\?|&|#|/|\.)|\.avi($|\s|\?|&|#|/|\.)|\.dll($|\s|\?|&|#|/|\.)|\.pl($|\s|\?|&|#|/|\.)|\.webm($|\s|\?|&|#|/|\.)|\.c($|\s|\?|&|#|/|\.)|\.py($|\s|\?|&|#|/|\.)|\.bat($|\s|\?|&|#|/|\.)|\.tar($|\s|\?|&|#|/|\.)|\.swp($|\s|\?|&|#|/|\.)|\.tmp($|\s|\?|&|#|/|\.)|\.sh($|\s|\?|&|#|/|\.)|\.deb($|\s|\?|&|#|/|\.)|\.exe($|\s|\?|&|#|/|\.)|\.zip($|\s|\?|&|#|/|\.)|\.mpeg($|\s|\?|&|#|/|\.)|\.mpg($|\s|\?|&|#|/|\.)|\.flv($|\s|\?|&|#|/|\.)|\.wmv($|\s|\?|&|#|/|\.)|\.wma($|\s|\?|&|#|/|\.)|\.aac($|\s|\?|&|#|/|\.)|\.m4a($|\s|\?|&|#|/|\.)|\.ogg($|\s|\?|&|#|/|\.)|\.mp4($|\s|\?|&|#|/|\.)|\.mp3($|\s|\?|&|#|/|\.)|\.bat($|\s|\?|&|#|/|\.)|\.dat($|\s|\?|&|#|/|\.)|\.cfg($|\s|\?|&|#|/|\.)|\.cfm($|\s|\?|&|#|/|\.)|\.bin($|\s|\?|&|#|/|\.)|\.jpeg($|\s|\?|&|#|/|\.)|\.JPEG($|\s|\?|&|#|/|\.)|\.ps.gz($|\s|\?|&|#|/|\.)|\.gz($|\s|\?|&|#|/|\.)|\.gif($|\s|\?|&|#|/|\.)|\.tif($|\s|\?|&|#|/|\.)|\.tiff($|\s|\?|&|#|/|\.)|\.csv($|\s|\?|&|#|/|\.)|\.png($|\s|\?|&|#|/|\.)|\.ttf($|\s|\?|&|#|/|\.)|\.ppt($|\s|\?|&|#|/|\.)|\.pptx($|\s|\?|&|#|/|\.)|\.ppsx($|\s|\?|&|#|/|\.)|\.doc($|\s|\?|&|#|/|\.)|\.woff($|\s|\?|&|#|/|\.)|\.xlsx($|\s|\?|&|#|/|\.)|\.xls($|\s|\?|&|#|/|\.)|\.mpp($|\s|\?|&|#|/|\.)|\.mdb($|\s|\?|&|#|/|\.)|\.json($|\s|\?|&|#|/|\.)|\.woff2($|\s|\?|&|#|/|\.)|\.icon($|\s|\?|&|#|/|\.)|\.pdf($|\s|\?|&|#|/|\.)|\.docx($|\s|\?|&|#|/|\.)|\.svg($|\s|\?|&|#|/|\.)|\.txt($|\s|\?|&|#|/|\.)|\.jar($|\s|\?|&|#|/|\.)|\.0($|\s|\?|&|#|/|\.)|\.1($|\s|\?|&|#|/|\.)|\.2($|\s|\?|&|#|/|\.)|\.3($|\s|\?|&|#|/|\.)|\.4($|\s|\?|&|#|/|\.)|\.m4r($|\s|\?|&|#|/|\.)|\.kml($|\s|\?|&|#|/|\.)|\.pro($|\s|\?|&|#|/|\.)|\.yao($|\s|\?|&|#|/|\.)|\.gcn3($|\s|\?|&|#|/|\.)|\.PDF($|\s|\?|&|#|/|\.)|\.egy($|\s|\?|&|#|/|\.)|\.par($|\s|\?|&|#|/|\.)|\.lin($|\s|\?|&|#|/|\.)|\.yht($|\s|\?|&|#|/|\.)' > path5.txt
+    sleep 5
+    count_urls "path5.txt" "Extensions filtered and URLs cleaned."
+
+    # Step 5: Running URO tool again to filter duplicate and similar URLs
+    show_progress "Running URO tool again to filter duplicate and similar URLs..."
+    uro -i path5.txt -o path6.txt &
+    uro_pid_clean=$!
+
+    # Monitor the URO process
+    while kill -0 $uro_pid_clean 2> /dev/null; do
+        show_progress "URO tool is still running for clean URLs...⌛"
+        sleep 30  # Check every 30 seconds
+    done
+
+    # Final message after URO processing completes
+    show_progress "URO processing completed. Files created successfully."
+    count_urls "path6.txt" "Final cleaned URLs after URO filtering."
+
+    # Step 6: Deleting all previous files except the last one (path6.txt)
+    show_progress "Deleting all intermediate files..."
+    rm -f path1.txt path1-filtered.txt path3.txt path4.txt path5.txt
+
+    # Step 7: Renaming path6.txt to path-ready.txt
+    show_progress "Renaming path6.txt to path-ready.txt..."
+    mv path6.txt path-ready.txt
+
+    # Step 8: Final message with the new file
+    echo -e "${CYAN}New file created: path-ready.txt for path-based XSS.${NC}"
+
+    # Step 9: Running Python script for reflection checks
+    show_progress "Running Python script for reflection checks on filtered URLs..."
+    python path-reflection.py path-ready.txt --threads 2
+
+    # Step 9.1: Checking if the new file is generated
+    if [ -f path-xss.txt ]; then
+        echo -e "${CYAN}New file generated: path-xss.txt.${NC}"
+        count_urls "path-xss.txt" "Final URL count in path-xss.txt after Python processing."
+    else
+        echo -e "${RED}Error: path-xss.txt was not generated! Please check the Python script.${NC}"
+    fi
+
+    # Step 10: Processing the URLs to replace 'ibrahimXSS' with '{payload}'
+    show_progress "Processing URLs in path-xss.txt to replace 'ibrahimXSS' with '{payload}'..."
+
+    # Input file (path-xss.txt) and output file (path-xss-urls.txt)
+    input_file="path-xss.txt"
+    output_file="path-xss-urls.txt"
+
+    # Function to process and replace 'ibrahimXSS' with '{payload}'
+    process_urls() {
+        # Clear the output file if it exists
+          > "$output_file"
+
+        while read -r url; do
+            # Replace 'ibrahimXSS' with '{payload}' for each URL individually
+            processed_url=$(echo "$url" | sudo sed 's/ibrahimXSS/{payload}/g')
+
+            # Save each processed URL to the output file
+            echo "$processed_url" | sudo tee -a "$output_file" > /dev/null
+        done < "$input_file"
+    }
+
+    # Run the URL processing function
+    process_urls
+
+    # Remove duplicate entries and normalize slashes in the output file,
+    # ensuring the protocol part (https:// or http://) is not affected
+    sort "$output_file" | sudo uniq | sudo sed -E 's|(https?://)|\1|; s|//|/|g' | sudo sed 's|:/|://|g' > "$output_file.tmp" && sudo mv "$output_file.tmp" "$output_file"
+
+    # Final message for processed URLs
+    echo -e "${CYAN}Processed URLs have been saved to $output_file.${NC}"
+
+    # Step 11: Deleting intermediate files
+    show_progress "Deleting intermediate files path-ready.txt and path-xss.txt..."
+    rm -f path-ready.txt path-xss.txt
+
+    echo -e "${CYAN}Intermediate files deleted. Final output is $output_file.${NC}"
+
+    # Step 12: Launch the xss0r tool for path-based XSS testing
+    echo -e "${BOLD_BLUE}Launching the xss0r tool on path-xss-urls.txt...${NC}"
+    ./xss-checker --get --urls path-xss-urls.txt --payloads payloads.txt --threads 9 --shuffle --path
+    if [[ $? -ne 0 ]]; then
+        echo -e "${RED}The xss0r tool encountered an error during execution.${NC}"
+        exit 1
+    else
+        echo -e "${BOLD_GREEN}xss0r tool executed successfully! Check the output for results.${NC}"
+    fi
+}
+
 # Main script logic
 
 while true; do
     # Display options
     display_options
-    read -p "Enter your choice [1-10]: " choice
+    read -p "Enter your choice [1-11]: " choice
 
     # Check if the selected option is in the correct order
     if [[ $choice -ge 2 && $choice -le 8 && $choice -ne 4 ]]; then
@@ -1111,8 +1263,12 @@ while true; do
             echo -e "${BOLD_WHITE}You selected: VPS server xss0r help${NC}"
             show_vps_info
             ;;
+        11) # Execute Path-based XSS
+            run_path_based_xss
+            last_completed_option=11
+            ;;
         *)
-            echo "Invalid option. Please select a number between 1 and 10."
+            echo "Invalid option. Please select a number between 1 and 11."
             ;;
     esac
 done
