@@ -1021,7 +1021,7 @@ run_step_8() {
     fi
 }
 
- Function for Path-based XSS
+# Function for Path-based XSS
 run_path_based_xss() {
     echo -e "${BOLD_WHITE}You selected: Path-based XSS${NC}"
 
