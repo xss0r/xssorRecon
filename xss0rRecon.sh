@@ -359,6 +359,7 @@ install_tools() {
     show_progress "Installing Arjun"
     sudo apt install -y arjun
     sudo pip3 install arjun --root-user-action=ignore
+    sudo pip install alive_progress
     sleep 3
 
     # Step 14: Install Tmux
