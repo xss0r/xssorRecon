@@ -1025,9 +1025,20 @@ run_step_8() {
 run_path_based_xss() {
     echo -e "${BOLD_WHITE}You selected: Path-based XSS${NC}"
 
-    # List all available domain files in the directory
+    # Check if any *-ALL-links.txt files are available
+    available_files=$(ls *-ALL-links.txt 2>/dev/null)
+
+    # If no files are found, display a message and return
+    if [ -z "$available_files" ]; then
+        echo -e "${RED}No *-ALL-links.txt files found.${NC}"
+        echo -e "${BOLD_WHITE}Please start scanning your domain from step 2.${NC}"
+        echo -e "${BOLD_WHITE}After completing the crawling and filtering processes, a file for Path-based XSS (${domain_name}-ALL-links.txt) will be generated.${NC}"
+        return
+    fi
+
+    # List available domain files if found
     echo -e "${BOLD_WHITE}Available domain files:${NC}"
-    ls *-ALL-links.txt  # List all files that end with -ALL-links.txt
+    echo "$available_files"
     
     # Prompt the user to enter the domain name (without the -ALL-links.txt part)
     read -p "Please enter the domain name (just the base, without '-ALL-links.txt'): " domain_name
