@@ -263,6 +263,9 @@ install_tools() {
     source myenv/bin/activate
     sudo pip install structlog --root-user-action=ignore
     pip install requests
+    apt install python3-full python3-pip
+    apt install pipx
+    export PATH="$PATH:/root/.local/bin"
     sleep 3
 
     # Step 2: Install the latest version of pip
@@ -352,7 +355,7 @@ install_tools() {
 
     # Step 12: Install Uro
     show_progress "Installing Uro"
-    sudo pip install uro --root-user-action=ignore
+    sudo pip install uro --root-user-action=ignore --break-system-packages
     sudo uro --help  # Ensure Uro runs with sudo
     sleep 3
 
@@ -529,7 +532,7 @@ run_step_3() {
 
     # Step 7: Filtering ALIVE domain names
     show_progress "Filtering ALIVE domain names"
-    subprober -f "unique-${domain_name}-domains.txt" -sc -ar -o "subprober-${domain_name}-domains.txt" -nc -mc 200 301 302 307 308 403 -c 50 || handle_error "subprober"
+    subprober -f "unique-${domain_name}-domains.txt" -sc -ar -o "subprober-${domain_name}-domains.txt" -nc -mc 200 301 302 307 308 403 401 -c 50 || handle_error "subprober"
     sleep 5
 
     # Step 8: Filtering valid domain names
