@@ -249,6 +249,7 @@ install_tools() {
     
     show_progress "Installing dependencies"
     sudo apt update
+    sudo apt-mark hold google-chrome-stable
     sudo apt-get install -y rsync zip unzip p7zip-full wget golang-go
     sudo apt-get install terminator
     sudo apt remove python3-structlog
@@ -258,11 +259,8 @@ install_tools() {
 
     # Step 1: Install Python3 virtual environment and structlog in venv
     show_progress "Installing python3-venv and setting up virtual environment"
-    sudo apt install python3-venv
-    python3 -m venv myenv
-    source myenv/bin/activate
-    sudo pip install structlog --root-user-action=ignore
-    pip install requests
+    sudo pip install structlog --break-system-packages --root-user-action=ignore
+    pip install requests --break-system-packages --root-user-action=ignore
     apt install python3-full python3-pip
     apt install pipx
     export PATH="$PATH:/root/.local/bin"
@@ -284,35 +282,111 @@ install_tools() {
     sleep 3
 
     # Step 4: Install Dnsbruter (Skip if the folder already exists)
-    if [ ! -d "Dnsbruter" ]; then
-        show_progress "Installing Dnsbruter"
-        sudo pip install --no-deps --force-reinstall git+https://github.com/RevoltSecurities/Dnsbruter.git --root-user-action=ignore
-        export PATH=$PATH:/home/kali/.local/bin  # Ensure dnsbruter is found
-        
-        # Install missing dependencies for dnsbruter
-        sudo pip install aiodns==3.1.1 alive-progress==3.1.5 colorama==0.4.6 --root-user-action=ignore
-        sleep 3
+if [ ! -d "Dnsbruter" ]; then
+    show_progress "Installing Dnsbruter"
+
+    # Update and upgrade the system
+    sudo apt update && sudo apt upgrade -y
+
+    # Install Python 3.12
+    sudo apt install python3.12 -y
+
+    # Install pip for Python 3.12
+    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    python3.12 get-pip.py
+
+    # Install pipx and ensure it's in the PATH
+    pip install pipx==1.7.1 --break-system-packages --root-user-action=ignore
+    pipx ensurepath
+
+    # Verify Python, pip, and pipx installations
+    python3 --version
+    pip --version
+    pipx --version
+
+    # Install Dnsbruter with pip (no dependencies and force reinstall)
+    sudo pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter.git
+
+    # Optionally try installing with pipx as well
+    sudo pipx install git+https://github.com/RevoltSecurities/Dnsbruter.git --break-system-packages
+    sudo pipx install dnsbruter --force
+
+    # Clone the repository (optional if you want the source code locally)
+    sudo git clone https://github.com/RevoltSecurities/Dnsbruter.git
+    cd Dnsbruter
+    sudo pip install . --break-system-packages --root-user-action=ignore
+    cd ..
+    sudo rm -rf Dnsbruter
+
+    # Ensure that dnsbruter is accessible globally
+    if command -v dnsbruter &> /dev/null; then
+        echo "Dnsbruter is successfully installed and globally available."
     else
-        show_progress "Dnsbruter is already installed. Skipping installation."
+        echo "Dnsbruter installation failed. Please check the installation steps."
     fi
+
+    # Final check to ensure dnsbruter is installed correctly
+    if command -v dnsbruter &> /dev/null; then
+        echo "Dnsbruter is ready to use. You can run 'dnsbruter -h' to confirm."
+        dnsbruter -h
+    else
+        echo "Dnsbruter installation failed. Please check the installation steps."
+    fi
+
+    sleep 3
+else
+    show_progress "Dnsbruter is already installed. Skipping installation."
+fi
 
     # Step 5: Install Subdominator (Skip if the folder already exists)
-    if [ ! -d "Subdominator" ]; then
-        show_progress "Installing Subdominator"
-        sudo pip install git+https://github.com/RevoltSecurities/Subdominator --root-user-action=ignore
-        sleep 3
-    else
-        show_progress "Subdominator is already installed. Skipping installation."
-    fi
+if [ ! -d "Subdominator" ]; then
+    show_progress "Installing Subdominator"
+
+    # Install Subdominator directly from the GitHub repository
+    sudo pip install git+https://github.com/RevoltSecurities/Subdominator.git --break-system-packages --root-user-action=ignore
+
+    # Clone the repository (optional if you need the source code locally)
+    sudo git clone https://github.com/RevoltSecurities/Subdominator.git
+    cd Subdominator
+
+    # Install from local cloned repository
+    sudo pip install . --break-system-packages --root-user-action=ignore
+
+    # Clean up by removing the cloned directory after installation
+    cd ..
+    sudo rm -rf Subdominator
+
+    show_progress "Subdominator installation complete."
+
+    sleep 3
+else
+    show_progress "Subdominator is already installed. Skipping installation."
+fi
 
     # Step 6: Install SubProber (Skip if the folder already exists)
-    if [ ! -d "SubProber" ]; then
-        show_progress "Installing SubProber"
-        sudo pip install git+https://github.com/sanjai-AK47/Subprober.git --root-user-action=ignore
-        sleep 3
-    else
-        show_progress "SubProber is already installed. Skipping installation."
-    fi
+if [ ! -d "SubProber" ]; then
+    show_progress "Installing SubProber"
+
+    # Install SubProber directly from the GitHub repository
+    sudo pip install git+https://github.com/RevoltSecurities/Subprober.git --break-system-packages --root-user-action=ignore
+
+    # Clone the repository (optional if you need the source code locally)
+    sudo git clone https://github.com/RevoltSecurities/Subprober.git
+    cd Subprober
+
+    # Install from local cloned repository
+    sudo pip install . --break-system-packages --root-user-action=ignore
+
+    # Clean up by removing the cloned directory after installation
+    cd ..
+    rm -rf Subprober
+
+    show_progress "SubProber installation complete."
+
+    sleep 3
+else
+    show_progress "SubProber is already installed. Skipping installation."
+fi
 
     # Step 7: Install GoSpider
     show_progress "Installing GoSpider"
@@ -355,15 +429,16 @@ install_tools() {
 
     # Step 12: Install Uro
     show_progress "Installing Uro"
-    sudo pip install uro --root-user-action=ignore --break-system-packages
+    sudo pip install uro --break-system-packages --root-user-action=ignore
     sudo uro --help  # Ensure Uro runs with sudo
     sleep 3
 
     # Step 13: Install Arjun
     show_progress "Installing Arjun"
     sudo apt install -y arjun
-    sudo pip3 install arjun --root-user-action=ignore
-    sudo pip install alive_progress
+    sudo pip3 install arjun --break-system-packages --root-user-action=ignore
+    sudo pip install alive_progress --break-system-packages --root-user-action=ignore
+    sudo pip install ratelimit --break-system-packages --root-user-action=ignore
     sleep 3
 
     # Step 14: Install Tmux
