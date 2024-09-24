@@ -439,6 +439,7 @@ fi
     sudo pip3 install arjun --break-system-packages --root-user-action=ignore
     sudo pip install alive_progress --break-system-packages --root-user-action=ignore
     sudo pip install ratelimit --break-system-packages --root-user-action=ignore
+    sudo mv /usr/lib/python3.12/EXTERNALLY-MANAGED /usr/lib/python3.12/EXTERNALLY-MANAGED.bak
     sleep 3
 
     # Step 14: Install Tmux
