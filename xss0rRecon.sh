@@ -316,7 +316,7 @@ if [ ! -d "Dnsbruter" ]; then
     cd Dnsbruter
     sudo pip install . --break-system-packages --root-user-action=ignore
     cd ..
-    sudo rm -rf Dnsbruter
+    sudo rm -r Dnsbruter
 
     # Ensure that dnsbruter is accessible globally
     if command -v dnsbruter &> /dev/null; then
@@ -354,7 +354,7 @@ if [ ! -d "Subdominator" ]; then
 
     # Clean up by removing the cloned directory after installation
     cd ..
-    sudo rm -rf Subdominator
+    sudo sudo rm -r Subdominator
 
     show_progress "Subdominator installation complete."
 
@@ -379,7 +379,7 @@ if [ ! -d "SubProber" ]; then
 
     # Clean up by removing the cloned directory after installation
     cd ..
-    rm -rf Subprober
+    sudo rm -r Subprober
 
     show_progress "SubProber installation complete."
 
