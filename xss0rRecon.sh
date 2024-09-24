@@ -260,7 +260,7 @@ install_tools() {
     # Step 1: Install Python3 virtual environment and structlog in venv
     show_progress "Installing python3-venv and setting up virtual environment"
     sudo pip install structlog --break-system-packages --root-user-action=ignore
-    pip install requests --break-system-packages --root-user-action=ignore
+    sudo pip install requests --break-system-packages --root-user-action=ignore
     sudo apt install python3-full python3-pip
     sudo apt install pipx
     export PATH="$PATH:/root/.local/bin"
@@ -1031,7 +1031,7 @@ if [ -f "reflection.py" ]; then
 
             # Remove the original xss.txt file
             echo -e "${BOLD_BLUE}Removing the old xss.txt file...${NC}"
-            rm -r xss.txt
+            sudo rm -r xss.txt
             sleep 3
 
             # Removing 99% similar parameters with bash command
@@ -1041,7 +1041,7 @@ if [ -f "reflection.py" ]; then
 
             # Remove the intermediate xss1.txt file
             echo -e "${BOLD_BLUE}Removing the intermediate xss1.txt file...${NC}"
-            rm -r xss1.txt
+            sudo rm -r xss1.txt
             sleep 3
 
             # Running URO for xss-urls.txt file
