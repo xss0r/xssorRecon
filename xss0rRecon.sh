@@ -608,7 +608,7 @@ run_step_3() {
 
     # Step 7: Filtering ALIVE domain names
     show_progress "Filtering ALIVE domain names"
-    subprober -f "unique-${domain_name}-domains.txt" -sc -ar -o "subprober-${domain_name}-domains.txt" -nc -mc 200 301 302 307 308 403 401 -c 50 || handle_error "subprober"
+    subprober -f "unique-${domain_name}-domains.txt" -sc -ar -o "subprober-${domain_name}-domains.txt" -nc -mc 200 301 302 307 308 403 401 -c 20 || handle_error "subprober"
     sleep 5
 
     # Step 8: Filtering valid domain names
@@ -842,7 +842,7 @@ run_step_5() {
 
     # Step 24: Filtering ALIVE domain names
     show_progress "Filtering ALIVE domain names"
-    subprober -f "${domain_name}-links.txt" -sc -ar -o "${domain_name}-links.txt1337" -nc -mc 200 301 302 307 308 403 -c 50 || handle_error "subprober"
+    subprober -f "${domain_name}-links.txt" -sc -ar -o "${domain_name}-links.txt1337" -nc -mc 200 301 302 307 308 403 -c 20 || handle_error "subprober"
     sleep 5
 
     # Step 25: Removing old file
