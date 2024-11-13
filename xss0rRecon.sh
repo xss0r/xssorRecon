@@ -60,7 +60,7 @@ echo " /_/\_\___/___/\___/|_|    |_| \_\___|\___\___/|_| |_|"
 echo -e "${NC}"
 
 # Centered Contact Information
-echo -e "${BOLD_BLUE}                      Website: ibrahimxss.store${NC}"
+echo -e "${BOLD_BLUE}                      Website: store.xss0r.com${NC}"
 echo -e "${BOLD_BLUE}                      X: https://x.com/xss0r${NC}"
 
 # Function to display options
@@ -217,10 +217,10 @@ echo -e "${CYAN}2. Install Debian                          ${NC} # Install the D
 echo -e "${CYAN}3. nano /etc/apt/sources.list              ${NC} # Edit source list in Debian OS"
 echo -e "${CYAN}4. deb http://asi-fs-d.contabo.net/debian bookworm main non-free-firmware  ${NC} # Change 'bookworm' to 'testing'"
 echo -e "${CYAN}5. deb-src http://asi-fs-d.contabo.net/debian bookworm main non-free-firmware ${NC} # Change 'bookworm' to 'testing'"
-echo -e "${CYAN}6. Update & Upgrade                        ${NC} # sudo apt install gnome -y"
+echo -e "${CYAN}6. Update & Upgrade                        ${NC} # sudo apt update && sudo apt install libc6 -y && sudo apt install gnome -y"
 echo -e "${CYAN}7. Install Kali OS                         ${NC} # Not needed any changes except updates & upgrades"
 echo -e "${CYAN}8. Upload all files to your VPS            ${NC} # Upload xss0r + xss0rRecon files"
-echo -e "${CYAN}9. chmod +x xss-checker                       ${NC} # Add execute permission to the xss0r tool"
+echo -e "${CYAN}9. chmod +x xss0r                          ${NC} # Add execute permission to the xss0r tool"
 echo -e "${CYAN}10. chmod +x chromedriver                      ${NC} # Add execute permission to chromedriver"
 echo -e "${CYAN}11. Install required Chrome version from the eBook ${NC} # Install the required Chrome version as outlined in the eBook"
 echo -e "${CYAN}12. Run xss0r and enter API License         ${NC} # Run xss0r tool and enter your API license"
@@ -513,25 +513,25 @@ echo -e "\n\n"
 
 # Bold blue message surrounded by a rectangle of lines with extra spacing
 echo -e "${BOLD_BLUE}=============================================================================================${NC}"
-echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
-echo -e "${BOLD_BLUE}|  NOTE: To use this tool, you must have the xss-checker tool, which is an XSS detection     |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                            |${NC}"
+echo -e "${BOLD_BLUE}|  NOTE: To use this tool, you must have the xss0r tool, which is an XSS detection           |${NC}"
 echo -e "${BOLD_BLUE}|  and exploitation tool for all types of XSS attacks, in the same directory.                |${NC}"
-echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
-echo -e "${BOLD_BLUE}|  Alongside the xss-checker tool, you'll also need two wordlists and a Python reflection    |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                            |${NC}"
+echo -e "${BOLD_BLUE}|  Alongside the xss0r tool, you'll also need two wordlists and a Python reflection          |${NC}"
 echo -e "${BOLD_BLUE}|  detection tool. All of these can be found in any of the XSS plans available on the site.  |${NC}"
-echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
-echo -e "${BOLD_BLUE}|  You can get them by visiting: https://ibrahimxss.store/ and purchasing any plan that      |${NC}"
-echo -e "${BOLD_BLUE}|  fits your needs.                                                                         |${NC}"
-echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
-echo -e "${BOLD_BLUE}|  If you already have a plan, simply copy the xss-checker tool, the wordlists, and the      |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                            |${NC}"
+echo -e "${BOLD_BLUE}|  You can get them by visiting: https://store.xss0r.com/ and purchasing any plan that       |${NC}"
+echo -e "${BOLD_BLUE}|  fits your needs.                                                                          |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                            |${NC}"
+echo -e "${BOLD_BLUE}|  If you already have a plan, simply copy the xss0r tool, the wordlists, and the            |${NC}"
 echo -e "${BOLD_BLUE}|  reflection detection tool into the same folder where your xss0rRecon tool is located.     |${NC}"
-echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                            |${NC}"
 echo -e "${BOLD_BLUE}|  Alternatively, if you don't have a plan or the tools, you can use the PRO plan for free   |${NC}"
-echo -e "${BOLD_BLUE}|  for 5 days each month from the 10th to the 15th.                                         |${NC}"
-echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
-echo -e "${BOLD_BLUE}|  The release of the key is posted on the homepage banner at ibrahimxss.store, but this     |${NC}"
+echo -e "${BOLD_BLUE}|  for 5 days each month from the 10th to the 15th.                                          |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                            |${NC}"
+echo -e "${BOLD_BLUE}|  The release of the key is posted on the homepage banner at store.xss0r.com, but this      |${NC}"
 echo -e "${BOLD_BLUE}|  option is only available for those who have not yet tested the tool.                      |${NC}"
-echo -e "${BOLD_BLUE}|                                                                                           |${NC}"
+echo -e "${BOLD_BLUE}|                                                                                            |${NC}"
 echo -e "${BOLD_BLUE}=============================================================================================${NC}"
 
 echo -e "\n\n"
@@ -1058,7 +1058,7 @@ if [ -f "reflection.py" ]; then
             echo -e "${BOLD_WHITE}Filtered Final URLs for XSS Testing: ${RED}${total_urls}${NC}"
 
             # Automatically run the xss0r command after reflection step
-            ./xss-checker --urls xss-urls.txt --payloads payloads.txt --shuffle --threads 9 || handle_error "xss0r run"
+            ./xss0r --get --urls xss-urls.txt --payloads payloads.txt --shuffle --threads 9 || handle_error "xss0r run"
         fi
     else
         echo -e "${RED}xss.txt not found. No reflective URLs identified.${NC}"
@@ -1074,28 +1074,28 @@ fi
 run_step_8() {
     echo -e "${BOLD_WHITE}You selected: xss0r RUN for $domain_name${NC}"
 
-    # Check if xss-checker and xss-urls.txt files exist
-    if [ -f "xss-checker" ] && [ -f "xss-urls.txt" ]; then
+    # Check if xss0r and xss-urls.txt files exist
+    if [ -f "xss0r" ] && [ -f "xss-urls.txt" ]; then
         show_progress "Running xss0r for XSS vulnerabilities"
-        ./xss-checker --urls xss-urls.txt --payloads payloads.txt --shuffle --threads 9
-        if [[ $? -ne 0 ]]; then  # Check if xss-checker command failed
+        ./xss0r --get --urls xss-urls.txt --payloads payloads.txt --shuffle --threads 9
+        if [[ $? -ne 0 ]]; then  # Check if xss0r command failed
             echo -e "${RED}The xss0r Tool encountered an error during execution.${NC}"
             exit 1
         fi
         sleep 5
         echo -e "${BOLD_BLUE}xss0r completed. Check the output files for results.${NC}"
     else
-        # Custom error message when xss-checker is missing
-        if [ ! -f "xss-checker" ]; then
+        # Custom error message when xss0r is missing
+        if [ ! -f "xss0r" ]; then
             echo -e "${RED}The xss0r Tool is not present in the current directory.${NC}"
             echo -e "${CYAN}Please ensure the xss0r tool is placed in the directory and run the script again.${NC}"
-            echo -e "${BOLD_WHITE}Alternatively, you can download or purchase the tool from ibrahimxss.store.${NC}"
-            echo -e "${BOLD_WHITE}After obtaining the tool, execute the xss-checker to enter your API key, and then proceed with the xss0rRecon tool.${NC}"
+            echo -e "${BOLD_WHITE}Alternatively, you can download or purchase the tool from store.xss0r.com. ${NC}"
+            echo -e "${BOLD_WHITE}After obtaining the tool, execute the xss0r to enter your API key, and then proceed with the xss0rRecon tool.${NC}"
         fi
         
         # Check if xss-urls.txt file is missing
         if [ ! -f "xss-urls.txt" ]; then
-            echo -e "${RED}The xss-urls.txt file is not present in the current directory. Please make sure the file is generated or placed in the directory and try again. Alternatively, you can download or purchase the tool from ibrahimxss.store. After obtaining the tool, execute the xss-checker to enter your API key, and then proceed with the xss0rRecon tool.${NC}"
+            echo -e "${RED}The xss-urls.txt file is not present in the current directory. Please make sure the file is generated or placed in the directory and try again. Alternatively, you can download or purchase the tool from store.xss0r.com. After obtaining the tool, execute the xss0r to enter your API key, and then proceed with the xss0rRecon tool.${NC}"
         fi
     fi
 }
@@ -1253,7 +1253,7 @@ run_path_based_xss() {
 
     # Step 12: Launch the xss0r tool for path-based XSS testing
     echo -e "${BOLD_BLUE}Launching the xss0r tool on path-xss-urls.txt...${NC}"
-    ./xss-checker --get --urls path-xss-urls.txt --payloads payloads.txt --threads 9 --shuffle --path
+    ./xss0r --get --urls path-xss-urls.txt --payloads payloads.txt --threads 9 --shuffle --path
     if [[ $? -ne 0 ]]; then
         echo -e "${RED}The xss0r tool encountered an error during execution.${NC}"
         exit 1
