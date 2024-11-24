@@ -303,6 +303,9 @@ if [ ! -d "Dnsbruter" ]; then
     python3 --version
     pip --version
     pipx --version
+    pip install structlog requests
+    pip install --upgrade pip
+    pip install --upgrade pipx
 
     # Install Dnsbruter with pip (no dependencies and force reinstall)
     sudo pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter.git
@@ -342,19 +345,29 @@ fi
 if [ ! -d "Subdominator" ]; then
     show_progress "Installing Subdominator"
 
-    # Install Subdominator directly from the GitHub repository
-    sudo pip install git+https://github.com/RevoltSecurities/Subdominator.git --break-system-packages --root-user-action=ignore
+    # Detect if running in WSL
+    if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
+        echo "Detected Windows Subsystem for Linux (WSL)"
+        # WSL-specific installation using pipx
+        sudo pipx install git+https://github.com/RevoltSecurities/Subdominator
+        sudo pipx inject subdominator colorama
+        sudo pipx inject subdominator tldextract
+    else
+        echo "Detected Linux environment"
+        # Regular Linux installation
+        sudo pip install git+https://github.com/RevoltSecurities/Subdominator.git --break-system-packages --root-user-action=ignore
 
-    # Clone the repository (optional if you need the source code locally)
-    sudo git clone https://github.com/RevoltSecurities/Subdominator.git
-    cd Subdominator
+        # Clone the repository (optional if you need the source code locally)
+        sudo git clone https://github.com/RevoltSecurities/Subdominator.git
+        cd Subdominator
 
-    # Install from local cloned repository
-    sudo pip install . --break-system-packages --root-user-action=ignore
+        # Install from local cloned repository
+        sudo pip install . --break-system-packages --root-user-action=ignore
 
-    # Clean up by removing the cloned directory after installation
-    cd ..
-    sudo sudo rm -r Subdominator
+        # Clean up by removing the cloned directory after installation
+        cd ..
+        sudo rm -r Subdominator
+    fi
 
     show_progress "Subdominator installation complete."
 
@@ -1006,8 +1019,8 @@ sleep 3
 
     # Step 3: Checking page reflection on the URLs
 if [ -f "reflection.py" ]; then
-    echo -e "${BOLD_WHITE}Checking page reflection on the URLs with command: python reflection.py ${domain_name}-query.txt --threads 2${NC}"
-    python reflection.py "${domain_name}-query.txt" --threads 2 || handle_error "reflection.py execution"
+    echo -e "${BOLD_WHITE}Checking page reflection on the URLs with command: python3 reflection.py ${domain_name}-query.txt --threads 2${NC}"
+    python3 reflection.py "${domain_name}-query.txt" --threads 2 || handle_error "reflection.py execution"
     sleep 5
 
     # Check if xss.txt is created after reflection.py
@@ -1204,7 +1217,7 @@ run_path_based_xss() {
 
     # Step 9: Running Python script for reflection checks
     show_progress "Running Python script for reflection checks on filtered URLs..."
-    python path-reflection.py path-ready.txt --threads 2
+    python3 path-reflection.py path-ready.txt --threads 2
 
     # Step 9.1: Checking if the new file is generated
     if [ -f path-xss.txt ]; then
