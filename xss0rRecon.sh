@@ -196,8 +196,8 @@ install_tools() {
 
     show_progress "Installing dependencies"
     sudo apt update
-    apt update --fix-missing
-    apt --fix-broken install
+    sudo apt update --fix-missing
+    sudo apt --fix-broken install
     sudo apt install -y python3 python3-pip python3-venv python3-setuptools git wget curl
     sudo apt-mark hold google-chrome-stable
     sudo apt-get install -y rsync zip unzip p7zip-full golang-go terminator pipx tmux
@@ -215,32 +215,24 @@ install_tools() {
     python3 -m venv env
 
     # Upgrade pip in virtual environment
-    pip install --upgrade pip
-    pip install structlog requests uvloop setuptools pipx
+    sudo pip install --upgrade pip
+    sudo pip install structlog requests uvloop setuptools pipx
 
     # Install necessary Python packages within the virtual environment
-    pip install structlog requests uvloop setuptools
+    sudo pip install structlog requests uvloop setuptools
 
     # Install pipx within the virtual environment
-    pip install pipx
+    sudo pip install pipx
 
     # Install Dnsbruter, Subdominator, SubProber within the virtual environment
-    pip install git+https://github.com/RevoltSecurities/Dnsbruter
-    pip install git+https://github.com/RevoltSecurities/Subdominator.git
-    pip install git+https://github.com/RevoltSecurities/Subprober.git
+    sudo pip install git+https://github.com/RevoltSecurities/Dnsbruter
+    sudo pip install git+https://github.com/RevoltSecurities/Subdominator.git
+    sudo pip install git+https://github.com/RevoltSecurities/Subprober.git
 
     # Install Uro, Arjun, and other required Python packages
-    pip install uro
-    pip install arjun
-    pip install alive_progress ratelimit
-
-    # Install Go tools
-    show_progress "Installing Go tools"
-    go install github.com/jaeles-project/gospider@latest
-    go install github.com/hakluke/hakrawler@latest
-    go install github.com/projectdiscovery/katana/cmd/katana@latest
-    go install github.com/tomnomnom/waybackurls@latest
-    go install github.com/lc/gau/v2/cmd/gau@latest
+    sudo pip install uro
+    sudo pip install arjun
+    sudo pip install alive_progress ratelimit
 
     # Add Go bin to PATH
     export PATH=$PATH:$(go env GOPATH)/bin
@@ -401,9 +393,9 @@ sleep 3
     python3 --version
     pip --version
     pipx --version
-    pip install structlog requests
-    pip install --upgrade pip
-    pip install --upgrade pipx
+    sudo pip install structlog requests
+    sudo pip install --upgrade pip
+    sudo pip install --upgrade pipx
     sudo apt install pipx -y
     pipx ensurepath
 
@@ -412,7 +404,7 @@ if ! command -v dnsbruter &> /dev/null; then
     show_progress "Installing Dnsbruter"
 
     # Try installing directly with pip
-    pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter.git
+    sudo pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter.git
 
     # Check if the installation was successful
     if ! pip show dnsbruter &> /dev/null; then
@@ -423,11 +415,11 @@ if ! command -v dnsbruter &> /dev/null; then
         cd Dnsbruter || exit
 
         # Install from the local cloned repository
-        pip install . --break-system-packages --root-user-action=ignore
+        sudo pip install . --break-system-packages --root-user-action=ignore
 
         # Clean up by removing the cloned directory after installation
         cd ..
-        rm -rf Dnsbruter
+        sudo rm -rf Dnsbruter
     else
         echo "Dnsbruter installed successfully using pip."
     fi
@@ -451,7 +443,7 @@ if [ ! -d "Subdominator" ]; then
     show_progress "Installing Subdominator"
 
     # Try installing directly with pip
-    pip install git+https://github.com/RevoltSecurities/Subdominator.git --break-system-packages --root-user-action=ignore
+    sudo pip install git+https://github.com/RevoltSecurities/Subdominator.git --break-system-packages --root-user-action=ignore
 
     # Check if the installation was successful
     if ! pip show subdominator &> /dev/null; then
@@ -462,11 +454,11 @@ if [ ! -d "Subdominator" ]; then
         cd Subdominator || exit
 
         # Install from local cloned repository
-        pip install . --break-system-packages --root-user-action=ignore
+        sudo pip install . --break-system-packages --root-user-action=ignore
 
         # Clean up by removing the cloned directory after installation
         cd ..
-        rm -rf Subdominator
+        sudo rm -rf Subdominator
     else
         echo "Subdominator installed successfully using pip."
     fi
@@ -482,7 +474,7 @@ if [ ! -d "SubProber" ]; then
     show_progress "Installing SubProber"
 
     # Try installing directly with pip
-    pip install git+https://github.com/RevoltSecurities/Subprober.git --break-system-packages --root-user-action=ignore
+    sudo pip install git+https://github.com/RevoltSecurities/Subprober.git --break-system-packages --root-user-action=ignore
 
     # Check if the installation was successful
     if ! pip show subprober &> /dev/null; then
@@ -493,11 +485,11 @@ if [ ! -d "SubProber" ]; then
         cd Subprober || exit
 
         # Install from local cloned repository
-        pip install . --break-system-packages --root-user-action=ignore
+        sudo pip install . --break-system-packages --root-user-action=ignore
 
         # Clean up by removing the cloned directory after installation
         cd ..
-        rm -rf Subprober
+        sudo rm -rf Subprober
     else
         echo "SubProber installed successfully using pip."
     fi
@@ -537,7 +529,7 @@ else
         sudo mv gospider /usr/local/bin/
         echo -e "${BOLD_BLUE}GoSpider installed successfully from source.${NC}"
         cd ..
-        rm -rf gospider
+        sudo rm -rf gospider
     else
         echo -e "${RED}Failed to build GoSpider from source.${NC}"
         cd ..
@@ -588,7 +580,7 @@ else
         sudo mv hakrawler /usr/local/bin/
         echo -e "${BOLD_BLUE}Hakrawler installed successfully from source.${NC}"
         cd ..
-        rm -rf hakrawler
+        sudo rm -rf hakrawler
     else
         echo -e "${RED}Failed to build Hakrawler from source.${NC}"
         cd ..
@@ -639,7 +631,7 @@ else
         sudo mv katana /usr/local/bin/
         echo -e "${BOLD_BLUE}Katana installed successfully from source.${NC}"
         cd ../../..
-        rm -rf katana
+        sudo rm -rf katana
     else
         echo -e "${RED}Failed to build Katana from source.${NC}"
         cd ../../..
@@ -713,7 +705,7 @@ else
         sudo mv gau /usr/local/bin/
         echo -e "${BOLD_BLUE}Gau installed successfully from source.${NC}"
         cd ../../..
-        rm -rf gau
+        sudo rm -rf gau
     else
         echo -e "${RED}Failed to build Gau from source.${NC}"
         cd ../../..
@@ -760,8 +752,8 @@ sleep 3
     show_progress "Installing Arjun"
     sudo apt install -y arjun
     sudo pip3 install arjun --break-system-packages --root-user-action=ignore
-    pip install alive_progress --break-system-packages --root-user-action=ignore
-    pip install ratelimit --break-system-packages --root-user-action=ignore
+    sudo pip install alive_progress --break-system-packages --root-user-action=ignore
+    sudo pip install ratelimit --break-system-packages --root-user-action=ignore
     sudo mv /usr/lib/python3.12/EXTERNALLY-MANAGED /usr/lib/python3.12/EXTERNALLY-MANAGED.bak
     sleep 3
 
@@ -870,7 +862,7 @@ run_step_3() {
                 
     # Step 1: Passive FUZZ domains with wordlist
     show_progress "Passive FUZZ domains with wordlist"
-    dnsbruter -d "$domain_name" -w subs-dnsbruter-small.txt -c 200 -wt 100 -o output-dnsbruter.txt -ws wild.txt || handle_error "dnsbruter"
+    dnsbruter -d "$domain_name" -w subs-dnsbruter-small.txt -c 50 -wt 100 -o output-dnsbruter.txt -ws wild.txt || handle_error "dnsbruter"
     sleep 5
 
     # Step 2: Active brute crawling domains
