@@ -408,102 +408,105 @@ sleep 3
     pipx ensurepath
 
     # Step 4: Install Dnsbruter (Skip if already installed)
-    if ! command -v dnsbruter &> /dev/null; then
-        show_progress "Installing Dnsbruter"
+if ! command -v dnsbruter &> /dev/null; then
+    show_progress "Installing Dnsbruter"
 
-        # Install Dnsbruter with pip (no dependencies and force reinstall)
-         pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter
+    # Try installing directly with pip
+    pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter.git
 
-        # Optionally try installing with pipx as well
-        sudo pipx install git+https://github.com/RevoltSecurities/Dnsbruter --break-system-packages
-        sudo pipx install dnsbruter --force
+    # Check if the installation was successful
+    if ! pip show dnsbruter &> /dev/null; then
+        echo "Direct installation failed. Attempting installation via cloning the repository."
 
-        # Clone the repository (optional if you want the source code locally)
-        git clone https://github.com/RevoltSecurities/Dnsbruter
-        cd Dnsbruter
+        # Clone the repository and install from source
+        git clone https://github.com/RevoltSecurities/Dnsbruter.git
+        cd Dnsbruter || exit
+
+        # Install from the local cloned repository
         pip install . --break-system-packages --root-user-action=ignore
+
+        # Clean up by removing the cloned directory after installation
         cd ..
         rm -rf Dnsbruter
-
-        # Ensure that dnsbruter is accessible globally
-        if command -v dnsbruter &> /dev/null; then
-            echo "Dnsbruter is successfully installed and globally available."
-        else
-            echo "Dnsbruter installation failed. Please check the installation steps."
-        fi
-
-        # Final check to ensure dnsbruter is installed correctly
-        if command -v dnsbruter &> /dev/null; then
-            echo "Dnsbruter is ready to use. You can run 'dnsbruter -h' to confirm."
-            dnsbruter -h
-        else
-            echo "Dnsbruter installation failed. Please check the installation steps."
-        fi
-
-        sleep 3
     else
-        show_progress "Dnsbruter is already installed. Skipping installation."
+        echo "Dnsbruter installed successfully using pip."
     fi
+
+    # Final check to ensure dnsbruter is accessible globally
+    if command -v dnsbruter &> /dev/null; then
+        echo "Dnsbruter is successfully installed and globally available."
+        dnsbruter -h
+    else
+        echo "Dnsbruter installation failed. Please check the installation steps."
+    fi
+
+    show_progress "Dnsbruter installation complete."
+    sleep 3
+else
+    show_progress "Dnsbruter is already installed. Skipping installation."
+fi
 
     # Step 5: Install Subdominator (Skip if the folder already exists)
-    if [ ! -d "Subdominator" ]; then
-        show_progress "Installing Subdominator"
+if [ ! -d "Subdominator" ]; then
+    show_progress "Installing Subdominator"
 
-        # Detect if running in WSL
-        if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
-            echo "Detected Windows Subsystem for Linux (WSL)"
-            # WSL-specific installation using pipx
-            sudo pipx install git+https://github.com/RevoltSecurities/Subdominator
-            sudo pipx inject subdominator coloramasudo pip install tldextract
-            sudo pipx inject subdominator tldextract
-        else
-            echo "Detected Linux environment"
-            # Regular Linux installation
-            pip install git+https://github.com/RevoltSecurities/Subdominator.git --break-system-packages --root-user-action=ignore
+    # Try installing directly with pip
+    pip install git+https://github.com/RevoltSecurities/Subdominator.git --break-system-packages --root-user-action=ignore
 
-            # Clone the repository (optional if you need the source code locally)
-            sudo git clone https://github.com/RevoltSecurities/Subdominator.git
-            cd Subdominator
+    # Check if the installation was successful
+    if ! pip show subdominator &> /dev/null; then
+        echo "Direct installation failed. Attempting installation via cloning the repository."
 
-            # Install from local cloned repository
-            pip install . --break-system-packages --root-user-action=ignore
-
-            # Clean up by removing the cloned directory after installation
-            cd ..
-            sudo rm -r Subdominator
-        fi
-
-        show_progress "Subdominator installation complete."
-
-        sleep 3
-    else
-        show_progress "Subdominator is already installed. Skipping installation."
-    fi
-
-    # Step 6: Install SubProber (Skip if the folder already exists)
-    if [ ! -d "SubProber" ]; then
-        show_progress "Installing SubProber"
-
-        # Install SubProber directly from the GitHub repository
-        pip install git+https://github.com/RevoltSecurities/Subprober.git --break-system-packages --root-user-action=ignore
-
-        # Clone the repository (optional if you need the source code locally)
-        sudo git clone https://github.com/RevoltSecurities/Subprober.git
-        cd Subprober
+        # Clone the repository and install from source
+        git clone https://github.com/RevoltSecurities/Subdominator.git
+        cd Subdominator || exit
 
         # Install from local cloned repository
         pip install . --break-system-packages --root-user-action=ignore
 
         # Clean up by removing the cloned directory after installation
         cd ..
-        sudo rm -r Subprober
-
-        show_progress "SubProber installation complete."
-
-        sleep 3
+        rm -rf Subdominator
     else
-        show_progress "SubProber is already installed. Skipping installation."
+        echo "Subdominator installed successfully using pip."
     fi
+
+    show_progress "Subdominator installation complete."
+    sleep 3
+else
+    show_progress "Subdominator is already installed. Skipping installation."
+fi
+
+    # Step 6: Install SubProber (Skip if the folder already exists)
+if [ ! -d "SubProber" ]; then
+    show_progress "Installing SubProber"
+
+    # Try installing directly with pip
+    pip install git+https://github.com/RevoltSecurities/Subprober.git --break-system-packages --root-user-action=ignore
+
+    # Check if the installation was successful
+    if ! pip show subprober &> /dev/null; then
+        echo "Direct installation failed. Attempting installation via cloning the repository."
+
+        # Clone the repository and install from source
+        git clone https://github.com/RevoltSecurities/Subprober.git
+        cd Subprober || exit
+
+        # Install from local cloned repository
+        pip install . --break-system-packages --root-user-action=ignore
+
+        # Clean up by removing the cloned directory after installation
+        cd ..
+        rm -rf Subprober
+    else
+        echo "SubProber installed successfully using pip."
+    fi
+
+    show_progress "SubProber installation complete."
+    sleep 3
+else
+    show_progress "SubProber is already installed. Skipping installation."
+fi
 
     # Step 7: Install GoSpider
 show_progress "Installing GoSpider"
@@ -750,7 +753,7 @@ sleep 3
     # Step 12: Install Uro
     show_progress "Installing Uro"
     pip install uro --break-system-packages --root-user-action=ignore
-    uro --help  # Ensure Uro runs with sudo
+    uro -h  # Ensure Uro runs with sudo
     sleep 3
 
     # Step 13: Install Arjun
