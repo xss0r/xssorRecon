@@ -24,6 +24,9 @@ BOLD_WHITE='\033[1;97m'
 BOLD_BLUE='\033[1;34m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'  # No Color
+
 # Function to handle errors
 handle_error() {
     echo -e "${RED}Error occurred during the execution of $1. Exiting.${NC}"
@@ -51,12 +54,10 @@ clear
 
 # Display banner
 echo -e "${BOLD_BLUE}"
-echo " __  _____ ___ / _ \ _ __  |  _ \ ___  ___ ___  _ __ " 
+echo " __  _____ ___ / _ \ _ __  |  _ \ ___  ___ ___  _ __ "
 echo " \ \/ / __/ __| | | | '__| | |_) / _ \/ __/ _ \| '_ \ "
 echo "  >  <\__ \__ \ |_| | |    |  _ <  __/ (_| (_) | | | |"
 echo " /_/\_\___/___/\___/|_|    |_| \_\___|\___\___/|_| |_|"
-                                                     
-
 echo -e "${NC}"
 
 # Centered Contact Information
@@ -76,7 +77,7 @@ display_options() {
     echo -e "${YELLOW}8: xss0r RUN${NC}"
     echo -e "${YELLOW}9: Exit${NC}"
     echo -e "${YELLOW}10: VPS server xss0r help${NC}"
-    echo -e "${YELLOW}11: Path-based XSS${NC}" # New Option 11 added here
+    echo -e "${YELLOW}11: Path-based XSS${NC}"
 }
 
 # Function to display VPS server xss0r help information with better formatting and crystal-like color
@@ -119,7 +120,7 @@ echo -e "${CYAN}sudo ufw allow 3389                        # Allow RDP access${N
 echo -e "${CYAN}sudo ufw reload                            # Reload UFW rules${NC}\n"
 echo -e "${CYAN}sudo ufw allow 22/tcp                      # Allow ssh over tcp${NC}\n"
 echo -e "${CYAN}sudo ufw allow ssh                         # Allow ssh
-echo -e "${CYAN}#### Configure Cockpit to Allow Unencrypted Access and Root Login:${NC}"
+echo -e "${CYAN}Configure Cockpit to Allow                 # Unencrypted Access and Root Login:${NC}"
 echo -e "${CYAN}sudo nano /etc/cockpit/cockpit.conf        # Add settings to cockpit.conf${NC}"
 echo -e "${CYAN}[WebService]\nAllowUnencrypted = true\nLogin= root\n" # Configuration content for cockpit.conf
 echo -e "${CYAN}sudo systemctl restart cockpit             # Restart Cockpit service to apply changes${NC}"
@@ -137,49 +138,6 @@ echo -e "${CYAN}sudo apt-get install p7zip-full  # Install p7zip${NC}"
 echo -e "${CYAN}wget https://github.com/45Drives/cockpit-navigator/releases/download/v0.5.10/cockpit-navigator_0.5.10-1focal_all.deb  # Download Cockpit Navigator${NC}"
 echo -e "${CYAN}sudo dpkg -i cockpit-navigator_0.5.10-1focal_all.deb  # Install Cockpit Navigator${NC}"
 echo -e "${CYAN}Navigate to https://YourVpsIP:9090/navigator  # Access Cockpit Navigator in your browser${NC}\n"
-
-echo -e "${CYAN}#### Install and Configure RDP:${NC}"
-echo -e "${CYAN}sudo apt install xrdp -y                    # Install xrdp for RDP functionality${NC}"
-echo -e "${CYAN}sudo adduser ibrahim                        # Add a new user 'ibrahim'${NC}"
-echo -e "${CYAN}sudo usermod -aG ssl-cert ibrahim           # Add user to ssl-cert group${NC}"
-echo -e "${CYAN}sudo usermod -aG adm ibrahim                # Add user to adm group${NC}"
-echo -e "${CYAN}sudo usermod -aG www-data ibrahim           # Add user to www-data group${NC}"
-echo -e "${CYAN}sudo usermod -aG sudo ibrahim               # Add user to sudo group${NC}"
-echo -e "${CYAN}sudo usermod -aG root ibrahim               # Add user to root group${NC}"
-echo -e "${CYAN}sudo usermod -aG systemd-journal ibrahim    # Add user to systemd-journal group${NC}"
-echo -e "${CYAN}sudo usermod -aG users ibrahim              # Add user to users group${NC}\n"
-
-echo -e "${CYAN}#### Configure Firewall for RDP and SSH:${NC}"
-echo -e "${CYAN}sudo ufw allow 3389/tcp                     # Allow RDP${NC}"
-echo -e "${CYAN}sudo ufw allow 22/tcp                       # Allow SSH${NC}"
-echo -e "${CYAN}sudo ufw reload                             # Reload UFW rules${NC}"
-echo -e "${CYAN}sudo iptables -A INPUT -p tcp --dport 3389 -j ACCEPT  # Allow RDP via iptables${NC}"
-echo -e "${CYAN}sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT    # Allow SSH via iptables${NC}"
-echo -e "${CYAN}sudo systemctl restart xrdp                 # Restart xrdp service${NC}"
-echo -e "${CYAN}sudo systemctl enable xrdp                  # Enable xrdp to start on boot${NC}\n"
-
-echo -e "${CYAN}#### Install and Configure Desktop Environment for RDP or down below you have for Kali Linux (Prefered):${NC}"
-echo -e "${CYAN}sudo apt install gnome -y                   # Install GNOME Desktop Environment${NC}"
-echo -e "${CYAN}sudo apt-get install mate-desktop-environment-extras mate-themes -y  # Install MATE Desktop${NC}"
-echo -e "${CYAN}sudo apt-get install xfce4 xfce4-goodies -y  # Install XFCE Desktop${NC}"
-echo -e "${CYAN}gsettings set org.mate.interface gtk-theme 'Menta'  # Set theme for MATE${NC}"
-echo -e "${CYAN}gsettings set org.gnome.desktop.interface gtk-theme 'Menta'  # Set theme for GNOME${NC}"
-echo -e "${CYAN}xfconf-query -c xsettings -p /Net/ThemeName -s 'Xfce'  # Set theme for XFCE${NC}\n"
-echo -e "${CYAN}sudo reboot                                 # Update changes to VPS server${NC}\n"
-
-echo -e "${CYAN}#### Configure Desktop Session for RDP:${NC}"
-echo -e "${CYAN}echo 'xfce4-session' > ~/.xsession          # Configure XFCE session${NC}"
-echo -e "${CYAN}echo 'gnome-session' > ~/.xsession          # Configure GNOME session${NC}"
-echo -e "${CYAN}chmod 755 /root/.xsession                   # Set permissions for .xsession${NC}"
-echo -e "${CYAN}sudo systemctl restart sshd                 # Restart SSH service${NC}"
-echo -e "${CYAN}sudo ufw allow 3389                         # Ensure RDP is allowed through firewall${NC}"
-echo -e "${CYAN}sudo systemctl restart xrdp                 # Restart xrdp service${NC}"
-echo -e "${CYAN}rdesktop YourVpsIP                          # Connect to VPS via RDP${NC}"
-echo -e "${CYAN}sudo reboot                                 # Reboot system${NC}\n"
-
-echo -e "${CYAN}#### Troubleshooting RDP Issues:${NC}"
-echo -e "${CYAN}If RDP doesn't work, try reconfiguring xrdp:${NC}"
-echo -e "${CYAN}sudo dpkg-reconfigure xrdp                  # Reconfigure xrdp settings${NC}\n"
 
 echo -e "${CYAN}#### Install Kali Linux and Desktop Environment:${NC}"
 echo -e "${CYAN}sudo nano /etc/apt/sources.list             # Add Kali repository to sources.list${NC}"
@@ -202,12 +160,6 @@ echo -e "${CYAN}sudo apt autoremove                         # Remove unnecessary
 echo -e "${CYAN}sudo apt clean                              # Clean up package cache${NC}\n"
 echo -e "${CYAN}sudo reboot                                 # Update changes to VPS server${NC}\n"
 
-echo -e "${CYAN}#### Switching from RDP User to Root:${NC}"
-echo -e "${CYAN}sudo su -                                   # Switch to root user${NC}\n"
-
-echo -e "${CYAN}For more information about VPS configuration, please visit the official Contabo page or reach out to support.${NC}"
-
-
 
 # Steps for installing xss0r on VPS
 echo -e "${CYAN}#### Steps for installing xss0r on VPS:${NC}"
@@ -221,15 +173,11 @@ echo -e "${CYAN}6. Update & Upgrade                        ${NC} # sudo apt upda
 echo -e "${CYAN}7. Install Kali OS                         ${NC} # Not needed any changes except updates & upgrades"
 echo -e "${CYAN}8. Upload all files to your VPS            ${NC} # Upload xss0r + xss0rRecon files"
 echo -e "${CYAN}9. chmod +x xss0r                          ${NC} # Add execute permission to the xss0r tool"
-echo -e "${CYAN}10. chmod +x chromedriver                      ${NC} # Add execute permission to chromedriver"
-echo -e "${CYAN}11. Install required Chrome version from the eBook ${NC} # Install the required Chrome version as outlined in the eBook"
-echo -e "${CYAN}12. Run xss0r and enter API License         ${NC} # Run xss0r tool and enter your API license"
-echo -e "${CYAN}13. Run xss0rRecon and install all tools   ${NC} # Run xss0rRecon and install necessary tools"
-echo -e "${CYAN}14. Ensure all files in the same folder    ${NC} # Make sure all files are inside the same folder"
-echo -e "${CYAN}15. Add --no-sandbox option to Chrome      ${NC} # Add the --no-sandbox option to Google Chrome"
-echo -e "${CYAN}16. Run RDP GUI, launch Chrome, set default browser ${NC} # Run RDP GUI, run Chrome from terminal, set as default and open any site"
-echo -e "${CYAN}17. Exit from RDP GUI and back to Cockpit terminal  ${NC} # Close RDP and back to your terminal"
-echo -e "${CYAN}18. Run xss0r tool                         ${NC} # Launch and run xss0r tool"
+echo -e "${CYAN}10. Install required Chrome version from the eBook ${NC} # Install the required Chrome version as outlined in the eBook"
+echo -e "${CYAN}11. Run xss0r and enter API License         ${NC} # Run xss0r tool and enter your API license"
+echo -e "${CYAN}12. Run xss0rRecon and install all tools   ${NC} # Run xss0rRecon and install necessary tools"
+echo -e "${CYAN}13. Ensure all files in the same folder    ${NC} # Make sure all files are inside the same folder"
+echo -e "${CYAN}14. Run xss0r tool                         ${NC} # Launch and run xss0r tool"
 
 }
 
@@ -239,54 +187,206 @@ last_completed_option=1
 skip_order_check_for_option_4=false
 total_merged_urls=0
 
-
 # Function to run step 1 (Install all tools)
 install_tools() {
     # Find the current directory path
     CURRENT_DIR=$(pwd)
-    
+
     echo -e "${BOLD_WHITE}You selected: Install all tools${NC}"
-    
+
     show_progress "Installing dependencies"
     sudo apt update
+    sudo snap install docker
+    sudo apt  install -y docker.io  
+    sudo apt  install -y podman-docker 
+    sudo apt install -y python3 python3-pip python3-venv python3-setuptools git wget curl
     sudo apt-mark hold google-chrome-stable
-    sudo apt-get install -y rsync zip unzip p7zip-full wget golang-go
-    sudo apt-get install terminator
-    sudo apt remove python3-structlog
+    sudo apt-get install -y rsync zip unzip p7zip-full golang-go terminator pipx tmux
 
-    # Set full permissions for the xss0rRecon folder and its contents
-    sudo chmod -R 777 "$CURRENT_DIR/xss0rRecon"
+    # Remove conflicting package if it exists
+    sudo apt remove -y python3-structlog
+
+    # Set full permissions for the xss0rRecon script
+    sudo chmod 755 xss0rRecon.sh
 
     # Step 1: Install Python3 virtual environment and structlog in venv
     show_progress "Installing python3-venv and setting up virtual environment"
-    sudo pip install structlog --break-system-packages --root-user-action=ignore
-    sudo pip install requests --break-system-packages --root-user-action=ignore
-    sudo apt install python3-full python3-pip
-    sudo apt install pipx
-    export PATH="$PATH:/root/.local/bin"
+
+    # Create virtual environment
+    python3 -m venv env
+
+    # Upgrade pip in virtual environment
+    pip install --upgrade pip
+    pip install structlog requests uvloop setuptools pipx
+
+    # Install necessary Python packages within the virtual environment
+    pip install structlog requests uvloop setuptools
+
+    # Install pipx within the virtual environment
+    pip install pipx
+
+    # Install Dnsbruter, Subdominator, SubProber within the virtual environment
+    pip install git+https://github.com/RevoltSecurities/Dnsbruter
+    pip install git+https://github.com/RevoltSecurities/Subdominator.git
+    pip install git+https://github.com/RevoltSecurities/Subprober.git
+
+    # Install Uro, Arjun, and other required Python packages
+    pip install uro
+    pip install arjun
+    pip install alive_progress ratelimit
+
+    # Install Go tools
+    show_progress "Installing Go tools"
+    go install github.com/jaeles-project/gospider@latest
+    go install github.com/hakluke/hakrawler@latest
+    go install github.com/projectdiscovery/katana/cmd/katana@latest
+    go install github.com/tomnomnom/waybackurls@latest
+    go install github.com/lc/gau/v2/cmd/gau@latest
+
+    # Add Go bin to PATH
+    export PATH=$PATH:$(go env GOPATH)/bin
+
+    # Dynamically set the PATH based on the current user
+    if [ "$EUID" -eq 0 ]; then
+        echo "You are the root user."
+        export PATH="$PATH:/root/.local/bin"
+    else
+        # Detect the username of the home user
+        USERNAME=$(whoami)
+        echo "You are the home user: $USERNAME"
+        export PATH="$PATH:/home/$USERNAME/.local/bin"
+    fi
+
+    # Sleep for 3 seconds
     sleep 3
+
+    # Print the updated PATH for confirmation
+    echo "Updated PATH: $PATH"
+
+    # Display installed tools
+    echo -e "${BOLD_BLUE}All tools have been successfully installed within the virtual environment.${NC}"
+
+
+    # Sleep for 3 seconds
+    sleep 3
+
+    # Print the updated PATH for confirmation
+    echo "Updated PATH: $PATH"
 
     # Step 2: Install the latest version of pip
     show_progress "Installing/Upgrading pip"
     sudo apt update && sudo apt install python3-pip -y
     sudo pip3 install --upgrade pip --root-user-action=ignore
+    sudo pip install tldextract
+    echo "managed by system package manager" | sudo tee /usr/lib/python3.12/EXTERNALLY-MANAGED
     sleep 3
 
-    # Step 3: Install Go
-    show_progress "Installing Go"
-    wget https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
-    sudo tar -C /usr/local -xzf go1.22.5.linux-amd64.tar.gz
-    export PATH=$PATH:/usr/local/go/bin
-    go version
-    sudo rm -r go1.22.5.linux-amd64.tar.gz
-    sleep 3
+   # Step 3: Install Go
+show_progress "Installing Go 1.22.5"
 
-    # Step 4: Install Dnsbruter (Skip if the folder already exists)
-if [ ! -d "Dnsbruter" ]; then
-    show_progress "Installing Dnsbruter"
+# Remove any existing Go installations
+echo "Removing existing Go installations and cache..."
+sudo apt remove --purge golang -y
+sudo apt autoremove --purge -y
+sudo apt clean
+sudo rm -rf /usr/local/go
+sudo rm -rf /usr/bin/go
+sudo rm -rf /usr/local/bin/go
+sudo rm -rf /usr/local/sbin/go
+sudo rm -rf ~/go
+sudo rm -rf ~/.go
+sudo rm -rf ~/go-workspace
+sudo rm -rf ~/.gvm
+sudo rm -rf /root/go
+sudo rm -rf ~/go/pkg
+sudo rm -rf ~/go/bin
+sudo rm -rf ~/go/src
+sudo rm -rf ~/.cache/go-build
+sudo rm -rf ~/.config/go
+sudo rm -rf ~/.config/gopls
+sudo rm -rf /root/.cache/go-build
+sudo rm -rf /root/.config/go
 
-    # Update and upgrade the system
-    sudo apt update && sudo apt upgrade -y
+# Remove Go from PATH if previously added
+export PATH=$(echo "$PATH" | sed -e 's|:/usr/local/go/bin||' -e 's|:$HOME/go/bin||' -e 's|:$HOME/.local/bin||')
+
+# Confirm removal
+echo "Existing Go installations removed."
+
+# Download the required Go version
+echo "Downloading Go 1.22.5..."
+wget https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
+
+# Extract the Go tarball and install
+echo "Installing Go 1.22.5..."
+sudo tar -C /usr/local -xzf go1.22.5.linux-amd64.tar.gz
+
+# Set up the environment variables
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:$HOME/go/bin
+export PATH=$PATH:$HOME/go/bin:$HOME/.local/bin
+export GOPATH=$HOME/go
+xport GOPATH=$HOME/go
+export PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+
+# Verify the installed version
+go version
+
+# Clean up the downloaded tarball
+sudo rm -r go1.22.5.linux-amd64.tar.gz
+
+# Install dependencies for gvm
+echo "Installing dependencies for gvm..."
+sudo apt install -y curl git mercurial make binutils bison gcc build-essential
+
+# Install gvm and set Go 1.22.5 as default
+echo "Installing gvm and setting up Go 1.22.5 as default..."
+bash < <(curl -sSL https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+source ~/.gvm/scripts/gvm
+gvm install go1.22.5
+gvm use go1.22.5 --default
+
+# Clean Go build cache
+go clean
+
+# Hold updates for the Go package
+echo "Holding updates for Go installation..."
+sudo apt-mark hold golang-go
+
+# Sleep to allow environment variable changes to propagate
+sleep 3
+
+# Dynamically set the PATH based on the current user
+if [ "$EUID" -eq 0 ]; then
+    echo "You are the root user."
+    export PATH="$PATH:/root/.local/bin"
+else
+    # Detect the username of the home user
+    USERNAME=$(whoami)
+    echo "You are the home user: $USERNAME"
+    export PATH="$PATH:/home/$USERNAME/.local/bin"
+fi
+
+# Print the updated PATH for confirmation
+echo "Updated PATH: $PATH"
+
+# Confirm successful installation
+echo -e "${BOLD_BLUE}Go 1.22.5 has been successfully installed, configured, and set as default using gvm.${NC}"
+
+# Sleep to allow changes to take effect
+sleep 3
+
+# Add Go bin to PATH
+export PATH=$PATH:$(go env GOPATH)/bin
+
+# Print the updated PATH for confirmation
+echo "Updated PATH: $PATH"
+
+# Confirm successful installation
+echo -e "${BOLD_BLUE}Go has been successfully installed and configured.${NC}"
+
+# Sleep to allow changes to take effect
+sleep 3
 
     # Install Python 3.12
     sudo apt install python3.12 -y
@@ -306,143 +406,352 @@ if [ ! -d "Dnsbruter" ]; then
     pip install structlog requests
     pip install --upgrade pip
     pip install --upgrade pipx
+    sudo apt install pipx -y
+    pipx ensurepath
 
-    # Install Dnsbruter with pip (no dependencies and force reinstall)
-    sudo pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter.git
+    # Step 4: Install Dnsbruter (Skip if already installed)
+    if ! command -v dnsbruter &> /dev/null; then
+        show_progress "Installing Dnsbruter"
 
-    # Optionally try installing with pipx as well
-    sudo pipx install git+https://github.com/RevoltSecurities/Dnsbruter.git --break-system-packages
-    sudo pipx install dnsbruter --force
+        # Install Dnsbruter with pip (no dependencies and force reinstall)
+         pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter
 
-    # Clone the repository (optional if you want the source code locally)
-    sudo git clone https://github.com/RevoltSecurities/Dnsbruter.git
-    cd Dnsbruter
-    sudo pip install . --break-system-packages --root-user-action=ignore
-    cd ..
-    sudo rm -r Dnsbruter
+        # Optionally try installing with pipx as well
+        sudo pipx install git+https://github.com/RevoltSecurities/Dnsbruter --break-system-packages
+        sudo pipx install dnsbruter --force
 
-    # Ensure that dnsbruter is accessible globally
-    if command -v dnsbruter &> /dev/null; then
-        echo "Dnsbruter is successfully installed and globally available."
+        # Clone the repository (optional if you want the source code locally)
+        git clone https://github.com/RevoltSecurities/Dnsbruter
+        cd Dnsbruter
+        pip install . --break-system-packages --root-user-action=ignore
+        cd ..
+        rm -rf Dnsbruter
+
+        # Ensure that dnsbruter is accessible globally
+        if command -v dnsbruter &> /dev/null; then
+            echo "Dnsbruter is successfully installed and globally available."
+        else
+            echo "Dnsbruter installation failed. Please check the installation steps."
+        fi
+
+        # Final check to ensure dnsbruter is installed correctly
+        if command -v dnsbruter &> /dev/null; then
+            echo "Dnsbruter is ready to use. You can run 'dnsbruter -h' to confirm."
+            dnsbruter -h
+        else
+            echo "Dnsbruter installation failed. Please check the installation steps."
+        fi
+
+        sleep 3
     else
-        echo "Dnsbruter installation failed. Please check the installation steps."
+        show_progress "Dnsbruter is already installed. Skipping installation."
     fi
-
-    # Final check to ensure dnsbruter is installed correctly
-    if command -v dnsbruter &> /dev/null; then
-        echo "Dnsbruter is ready to use. You can run 'dnsbruter -h' to confirm."
-        dnsbruter -h
-    else
-        echo "Dnsbruter installation failed. Please check the installation steps."
-    fi
-
-    sleep 3
-else
-    show_progress "Dnsbruter is already installed. Skipping installation."
-fi
 
     # Step 5: Install Subdominator (Skip if the folder already exists)
-if [ ! -d "Subdominator" ]; then
-    show_progress "Installing Subdominator"
+    if [ ! -d "Subdominator" ]; then
+        show_progress "Installing Subdominator"
 
-    # Detect if running in WSL
-    if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
-        echo "Detected Windows Subsystem for Linux (WSL)"
-        # WSL-specific installation using pipx
-        sudo pipx install git+https://github.com/RevoltSecurities/Subdominator
-        sudo pipx inject subdominator colorama
-        sudo pipx inject subdominator tldextract
+        # Detect if running in WSL
+        if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
+            echo "Detected Windows Subsystem for Linux (WSL)"
+            # WSL-specific installation using pipx
+            sudo pipx install git+https://github.com/RevoltSecurities/Subdominator
+            sudo pipx inject subdominator coloramasudo pip install tldextract
+            sudo pipx inject subdominator tldextract
+        else
+            echo "Detected Linux environment"
+            # Regular Linux installation
+            pip install git+https://github.com/RevoltSecurities/Subdominator.git --break-system-packages --root-user-action=ignore
+
+            # Clone the repository (optional if you need the source code locally)
+            sudo git clone https://github.com/RevoltSecurities/Subdominator.git
+            cd Subdominator
+
+            # Install from local cloned repository
+            pip install . --break-system-packages --root-user-action=ignore
+
+            # Clean up by removing the cloned directory after installation
+            cd ..
+            sudo rm -r Subdominator
+        fi
+
+        show_progress "Subdominator installation complete."
+
+        sleep 3
     else
-        echo "Detected Linux environment"
-        # Regular Linux installation
-        sudo pip install git+https://github.com/RevoltSecurities/Subdominator.git --break-system-packages --root-user-action=ignore
+        show_progress "Subdominator is already installed. Skipping installation."
+    fi
+
+    # Step 6: Install SubProber (Skip if the folder already exists)
+    if [ ! -d "SubProber" ]; then
+        show_progress "Installing SubProber"
+
+        # Install SubProber directly from the GitHub repository
+        pip install git+https://github.com/RevoltSecurities/Subprober.git --break-system-packages --root-user-action=ignore
 
         # Clone the repository (optional if you need the source code locally)
-        sudo git clone https://github.com/RevoltSecurities/Subdominator.git
-        cd Subdominator
+        sudo git clone https://github.com/RevoltSecurities/Subprober.git
+        cd Subprober
 
         # Install from local cloned repository
-        sudo pip install . --break-system-packages --root-user-action=ignore
+        pip install . --break-system-packages --root-user-action=ignore
 
         # Clean up by removing the cloned directory after installation
         cd ..
-        sudo rm -r Subdominator
+        sudo rm -r Subprober
+
+        show_progress "SubProber installation complete."
+
+        sleep 3
+    else
+        show_progress "SubProber is already installed. Skipping installation."
     fi
 
-    show_progress "Subdominator installation complete."
-
-    sleep 3
-else
-    show_progress "Subdominator is already installed. Skipping installation."
-fi
-
-    # Step 6: Install SubProber (Skip if the folder already exists)
-if [ ! -d "SubProber" ]; then
-    show_progress "Installing SubProber"
-
-    # Install SubProber directly from the GitHub repository
-    sudo pip install git+https://github.com/RevoltSecurities/Subprober.git --break-system-packages --root-user-action=ignore
-
-    # Clone the repository (optional if you need the source code locally)
-    sudo git clone https://github.com/RevoltSecurities/Subprober.git
-    cd Subprober
-
-    # Install from local cloned repository
-    sudo pip install . --break-system-packages --root-user-action=ignore
-
-    # Clean up by removing the cloned directory after installation
-    cd ..
-    sudo rm -r Subprober
-
-    show_progress "SubProber installation complete."
-
-    sleep 3
-else
-    show_progress "SubProber is already installed. Skipping installation."
-fi
-
     # Step 7: Install GoSpider
-    show_progress "Installing GoSpider"
-    sudo apt install -y gospider
-    GO111MODULE=on sudo go install github.com/jaeles-project/gospider@latest
-    sleep 3
+show_progress "Installing GoSpider"
+
+# Ensure Go is installed
+if ! command -v go &> /dev/null; then
+    echo -e "${RED}Go is not installed. Please install Go before proceeding.${NC}"
+    exit 1
+fi
+
+# Attempt to install GoSpider using 'go install'
+echo -e "${BOLD_WHITE}Attempting to install GoSpider using 'go install'...${NC}"
+if go install github.com/jaeles-project/gospider@latest; then
+    echo -e "${BOLD_BLUE}GoSpider installed successfully via 'go install'.${NC}"
+
+    # Copy the binary to /usr/local/bin for system-wide access
+    sudo cp "$(go env GOPATH)/bin/gospider" /usr/local/bin/
+else
+    echo -e "${YELLOW}Failed to install GoSpider via 'go install'. Attempting to install from source...${NC}"
+
+    # Clone the GoSpider repository
+    git clone https://github.com/jaeles-project/gospider.git
+    cd gospider
+
+    # Build the GoSpider binary
+    if go build; then
+        chmod +x gospider
+        sudo mv gospider /usr/local/bin/
+        echo -e "${BOLD_BLUE}GoSpider installed successfully from source.${NC}"
+        cd ..
+        rm -rf gospider
+    else
+        echo -e "${RED}Failed to build GoSpider from source.${NC}"
+        cd ..
+        rm -rf gospider
+        exit 1
+    fi
+fi
+
+# Ensure /usr/local/bin is in PATH
+if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
+    export PATH="$PATH:/usr/local/bin"
+fi
+
+# Verify that GoSpider is accessible
+if ! command -v gospider &> /dev/null; then
+    echo -e "${RED}GoSpider is not in your PATH. Please ensure /usr/local/bin is in your PATH.${NC}"
+    exit 1
+fi
+
+sleep 3
 
     # Step 8: Install Hakrawler
-    show_progress "Installing Hakrawler"
-    sudo apt install -y hakrawler
-    sleep 3
+show_progress "Installing Hakrawler"
+
+# Ensure Go is installed
+if ! command -v go &> /dev/null; then
+    echo -e "${RED}Go is not installed. Please install Go before proceeding.${NC}"
+    exit 1
+fi
+
+# Attempt to install Hakrawler using 'go install'
+echo -e "${BOLD_WHITE}Attempting to install Hakrawler using 'go install'...${NC}"
+if go install github.com/hakluke/hakrawler@latest; then
+    echo -e "${BOLD_BLUE}Hakrawler installed successfully via 'go install'.${NC}"
+
+    # Copy the binary to /usr/local/bin for system-wide access
+    sudo cp "$(go env GOPATH)/bin/hakrawler" /usr/local/bin/
+else
+    echo -e "${YELLOW}Failed to install Hakrawler via 'go install'. Attempting to install from source...${NC}"
+
+    # Clone the Hakrawler repository
+    git clone https://github.com/hakluke/hakrawler.git
+    cd hakrawler
+
+    # Build the Hakrawler binary
+    if go build; then
+        chmod +x hakrawler
+        sudo mv hakrawler /usr/local/bin/
+        echo -e "${BOLD_BLUE}Hakrawler installed successfully from source.${NC}"
+        cd ..
+        rm -rf hakrawler
+    else
+        echo -e "${RED}Failed to build Hakrawler from source.${NC}"
+        cd ..
+        rm -rf hakrawler
+        exit 1
+    fi
+fi
+
+# Ensure /usr/local/bin is in PATH
+if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
+    export PATH="$PATH:/usr/local/bin"
+fi
+
+# Verify that Hakrawler is accessible
+if ! command -v hakrawler &> /dev/null; then
+    echo -e "${RED}Hakrawler is not in your PATH. Please ensure /usr/local/bin is in your PATH.${NC}"
+    exit 1
+fi
+
+sleep 3
 
     # Step 9: Install Katana
-    show_progress "Installing Katana"
-    sudo go install github.com/projectdiscovery/katana/cmd/katana@latest
+show_progress "Installing Katana"
 
-    # Copy Katana to /usr/local/bin and /usr/bin
-    sudo cp ~/go/bin/katana /usr/local/bin/
-    sudo cp ~/go/bin/katana /usr/bin/
-    sudo cp ~/go/bin/gau /usr/local/bin/
-    sudo cp ~/go/bin/gau /usr/bin/
-    sudo cp ~/go/bin/waybackurls /usr/local/bin/
-    sudo cp ~/go/bin/waybackurls /usr/bin/
+# Ensure Go is installed
+if ! command -v go &> /dev/null; then
+    echo -e "${RED}Go is not installed. Please install Go before proceeding.${NC}"
+    exit 1
+fi
+
+# Attempt to install Katana using 'go install'
+echo -e "${BOLD_WHITE}Attempting to install Katana using 'go install'...${NC}"
+if go install github.com/projectdiscovery/katana/cmd/katana@latest; then
+    echo -e "${BOLD_BLUE}Katana installed successfully via 'go install'.${NC}"
+
+    # Copy the binary to /usr/local/bin for system-wide access
+    sudo cp "$(go env GOPATH)/bin/katana" /usr/local/bin/
+else
+    echo -e "${YELLOW}Failed to install Katana via 'go install'. Attempting to install from source...${NC}"
+
+    # Clone the Katana repository
+    git clone https://github.com/projectdiscovery/katana.git
+    cd katana/cmd/katana
+
+    # Build the Katana binary
+    if go build; then
+        chmod +x katana
+        sudo mv katana /usr/local/bin/
+        echo -e "${BOLD_BLUE}Katana installed successfully from source.${NC}"
+        cd ../../..
+        rm -rf katana
+    else
+        echo -e "${RED}Failed to build Katana from source.${NC}"
+        cd ../../..
+        rm -rf katana
+        exit 1
+    fi
+fi
+
+# Ensure /usr/local/bin is in PATH
+if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
+    export PATH="$PATH:/usr/local/bin"
+fi
+
+# Verify that Katana is accessible
+if ! command -v katana &> /dev/null; then
+    echo -e "${RED}Katana is not in your PATH. Please ensure /usr/local/bin is in your PATH.${NC}"
+    exit 1
+fi
+
+sleep 3
+
+    # Copy Katana Gau Wayback to /usr/local/bin and /usr/bin
+    sudo cp katana /usr/local/bin/
+    sudo cp katana /usr/bin/
+    sudo cp gau /usr/local/bin/
+    sudo cp gau /usr/bin/
+    sudo cp waybackurls /usr/local/bin/
+    sudo cp waybackurls /usr/bin/
     sleep 3
 
-    # Step 10: Install Waybackurls
-    show_progress "Installing Waybackurls"
-    sudo go install github.com/tomnomnom/waybackurls@latest
-    sudo cp ~/go/bin/waybackurls /usr/local/bin/
-    sudo cp ~/go/bin/waybackurls /usr/bin/
-    sleep 3
 
     # Step 11: Install Gau
     show_progress "Installing Gau"
-    sudo go install github.com/lc/gau/v2/cmd/gau@latest
-    sudo cp ~/go/bin/gau /usr/local/bin/
-    sudo cp ~/go/bin/gau /usr/bin/
-    sudo bash -c 'echo -e "[gau]\nwayback = true\ncommoncrawl = true\notx = false" > /root/.gau.toml'
-    sleep 3
+
+    # Detect the current user's home directory
+    if [ "$EUID" -eq 0 ]; then
+        echo "Detected root user."
+        HOME_DIR="/root"
+    else
+        echo "Detected non-root user."
+        USERNAME=$(whoami)
+        HOME_DIR="/home/$USERNAME"
+    fi
+
+    #  Install Gau
+show_progress "Installing Gau"
+
+# Ensure Go is installed
+if ! command -v go &> /dev/null; then
+    echo -e "${RED}Go is not installed. Please install Go before proceeding.${NC}"
+    exit 1
+fi
+
+# Attempt to install Gau using 'go install'
+echo -e "${BOLD_WHITE}Attempting to install Gau using 'go install'...${NC}"
+if go install github.com/lc/gau/v2/cmd/gau@latest; then
+    echo -e "${BOLD_BLUE}Gau installed successfully via 'go install'.${NC}"
+
+    # Copy the binary to /usr/local/bin for system-wide access
+    sudo cp "$(go env GOPATH)/bin/gau" /usr/local/bin/
+else
+    echo -e "${YELLOW}Failed to install Gau via 'go install'. Attempting to install from source...${NC}"
+
+    # Clone the Gau repository
+    git clone https://github.com/lc/gau.git
+    cd gau/cmd/gau
+
+    # Build the Gau binary
+    if go build; then
+        chmod +x gau
+        sudo mv gau /usr/local/bin/
+        echo -e "${BOLD_BLUE}Gau installed successfully from source.${NC}"
+        cd ../../..
+        rm -rf gau
+    else
+        echo -e "${RED}Failed to build Gau from source.${NC}"
+        cd ../../..
+        rm -rf gau
+        exit 1
+    fi
+fi
+
+# Ensure /usr/local/bin is in PATH
+if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
+    export PATH="$PATH:/usr/local/bin"
+fi
+
+# Create a .gau.toml configuration file in the user's home directory
+echo -e "${BOLD_WHITE}Configuring Gau...${NC}"
+cat <<EOF > "$HOME/.gau.toml"
+[gau]
+wayback = true
+commoncrawl = true
+otx = false
+EOF
+
+# Set appropriate permissions for the .gau.toml file
+sudo chown "$USER":"$USER" "$HOME/.gau.toml"
+sudo chmod 644 "$HOME/.gau.toml"
+
+# Confirm installation and configuration
+if command -v gau &> /dev/null; then
+    echo -e "${BOLD_BLUE}Gau is successfully installed and globally available.${NC}"
+else
+    echo -e "${RED}Gau installation failed. Please check the installation steps.${NC}"
+    exit 1
+fi
+
+sleep 3
 
     # Step 12: Install Uro
     show_progress "Installing Uro"
-    sudo pip install uro --break-system-packages --root-user-action=ignore
+    pip install uro --break-system-packages --root-user-action=ignore
     sudo uro --help  # Ensure Uro runs with sudo
     sleep 3
 
@@ -450,8 +759,8 @@ fi
     show_progress "Installing Arjun"
     sudo apt install -y arjun
     sudo pip3 install arjun --break-system-packages --root-user-action=ignore
-    sudo pip install alive_progress --break-system-packages --root-user-action=ignore
-    sudo pip install ratelimit --break-system-packages --root-user-action=ignore
+    pip install alive_progress --break-system-packages --root-user-action=ignore
+    pip install ratelimit --break-system-packages --root-user-action=ignore
     sudo mv /usr/lib/python3.12/EXTERNALLY-MANAGED /usr/lib/python3.12/EXTERNALLY-MANAGED.bak
     sleep 3
 
@@ -466,7 +775,9 @@ fi
     sudo chmod 755 /usr/local/bin/waybackurls
     sudo chmod 755 /usr/local/bin/katana
     sudo chmod 755 /usr/local/bin/gau
-    sudo chmod 755 /usr/local/bin/uro    
+    sudo chmod 755 /usr/local/bin/uro
+    sudo chmod 755 /usr/local/bin/gospider
+    sudo chmod 755 /usr/local/bin/hakrawler
 
     # Display installed tools
     echo -e "${BOLD_BLUE}All tools have been successfully installed.${NC}"
@@ -530,8 +841,8 @@ echo -e "${BOLD_BLUE}|                                                          
 echo -e "${BOLD_BLUE}|  NOTE: To use this tool, you must have the xss0r tool, which is an XSS detection           |${NC}"
 echo -e "${BOLD_BLUE}|  and exploitation tool for all types of XSS attacks, in the same directory.                |${NC}"
 echo -e "${BOLD_BLUE}|                                                                                            |${NC}"
-echo -e "${BOLD_BLUE}|  Alongside the xss0r tool, you'll also need two wordlists and a Python reflection          |${NC}"
-echo -e "${BOLD_BLUE}|  detection tool. All of these can be found in any of the XSS plans available on the site.  |${NC}"
+echo -e "${BOLD_BLUE}|  Alongside the xss0r tool, you'll also need two wordlists and a 2 Pythons reflection       |${NC}"
+echo -e "${BOLD_BLUE}|  detection tools. All of these can be found in any of the XSS plans available on the site. |${NC}"
 echo -e "${BOLD_BLUE}|                                                                                            |${NC}"
 echo -e "${BOLD_BLUE}|  You can get them by visiting: https://store.xss0r.com/ and purchasing any plan that       |${NC}"
 echo -e "${BOLD_BLUE}|  fits your needs.                                                                          |${NC}"
@@ -693,10 +1004,25 @@ run_step_4() {
     sleep 3
 
     # Step 5: Crawling with Gau
-    show_progress "Crawling links with Gau"
-    rm -r /root/.gau.toml
-    cat "${domain_name}-domains.txt" | gau | tee -a "${domain_name}-gau.txt" || handle_error "Gau crawl"
-    sleep 3
+show_progress "Crawling links with Gau"
+
+# Detect the current user's home directory
+if [ "$EUID" -eq 0 ]; then
+    echo "Detected root user."
+    HOME_DIR="/root"
+else
+    echo "Detected non-root user."
+    USERNAME=$(whoami)
+    HOME_DIR="/home/$USERNAME"
+fi
+
+# Ensure the .gau.toml configuration file is removed
+rm -f "$HOME_DIR/.gau.toml"
+
+# Perform crawling with Gau and save results
+cat "${domain_name}-domains.txt" | gau | tee -a "${domain_name}-gau.txt" || handle_error "Gau crawl"
+
+sleep 3
 
     echo -e "${BOLD_BLUE}Crawling and filtering URLs completed successfully. Output files created for each tool.${NC}"
     
@@ -1234,19 +1560,26 @@ run_path_based_xss() {
     input_file="path-xss.txt"
     output_file="path-xss-urls.txt"
 
-    # Function to process and replace 'ibrahimXSS' with '{payload}'
-    process_urls() {
-        # Clear the output file if it exists
-          > "$output_file"
+    # Function to process URLs and replace 'ibrahimXSS' with '{payload}'
+process_urls() {
+    # Clear the output file if it exists
+    > "$output_file"
 
-        while read -r url; do
-            # Replace 'ibrahimXSS' with '{payload}' for each URL individually
-            processed_url=$(echo "$url" | sudo sed 's/ibrahimXSS/{payload}/g')
+    while read -r url; do
+        # Replace 'ibrahimXSS' with '{payload}' for each URL individually
+        processed_url=$(echo "$url" | sudo sed 's/ibrahimXSS/{payload}/g')
 
-            # Save each processed URL to the output file
-            echo "$processed_url" | sudo tee -a "$output_file" > /dev/null
-        done < "$input_file"
-    }
+        # Save each processed URL to the output file
+        echo "$processed_url" | sudo tee -a "$output_file" > /dev/null
+    done < "$input_file"
+
+    # Check if the output file was created successfully
+    if [ -f "$output_file" ]; then
+        echo "URLs processed and saved to $output_file"
+    else
+        echo "Error: Failed to process URLs or save the output."
+    fi
+}
 
     # Run the URL processing function
     process_urls
