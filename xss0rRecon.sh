@@ -196,6 +196,8 @@ install_tools() {
 
     show_progress "Installing dependencies"
     sudo apt update
+    apt update --fix-missing
+    apt --fix-broken install
     sudo apt install -y python3 python3-pip python3-venv python3-setuptools git wget curl
     sudo apt-mark hold google-chrome-stable
     sudo apt-get install -y rsync zip unzip p7zip-full golang-go terminator pipx tmux
