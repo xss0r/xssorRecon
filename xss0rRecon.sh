@@ -196,9 +196,6 @@ install_tools() {
 
     show_progress "Installing dependencies"
     sudo apt update
-    sudo snap install docker
-    sudo apt  install -y docker.io  
-    sudo apt  install -y podman-docker 
     sudo apt install -y python3 python3-pip python3-venv python3-setuptools git wget curl
     sudo apt-mark hold google-chrome-stable
     sudo apt-get install -y rsync zip unzip p7zip-full golang-go terminator pipx tmux
@@ -326,7 +323,6 @@ export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/go/bin
 export PATH=$PATH:$HOME/go/bin:$HOME/.local/bin
 export GOPATH=$HOME/go
-xport GOPATH=$HOME/go
 export PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
 
 # Verify the installed version
@@ -752,7 +748,7 @@ sleep 3
     # Step 12: Install Uro
     show_progress "Installing Uro"
     pip install uro --break-system-packages --root-user-action=ignore
-    sudo uro --help  # Ensure Uro runs with sudo
+    uro --help  # Ensure Uro runs with sudo
     sleep 3
 
     # Step 13: Install Arjun
