@@ -6,7 +6,7 @@ To use xss0rRecon effectively, it's essential that all required files are downlo
 🛠️ Setup Instructions:
 
     Download the necessary files:
-        Visit ibrahimxss.store.
+        Visit https://store.xss0r.com 
         Choose a plan (the PRO plan is free!).
         Download all the tools, wordlists, and the xss0r tool.
 
