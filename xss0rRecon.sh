@@ -621,7 +621,7 @@ fi
 
 # Attempt to install URLFinder using 'go install'
 echo -e "${BOLD_WHITE}Attempting to install URLFinder using 'go install'...${NC}"
-if sudo go install -v github.com/projectdiscovery/urlfinder/cmd/urlfinder@latest; then
+if go install -v github.com/projectdiscovery/urlfinder/cmd/urlfinder@latest; then
     echo -e "${BOLD_BLUE}URLFinder installed successfully via 'go install'.${NC}"
 
     # Copy the binary to /usr/local/bin for system-wide access
