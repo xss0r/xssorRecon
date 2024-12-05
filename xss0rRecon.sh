@@ -758,7 +758,7 @@ else
     echo -e "${YELLOW}Failed to install Gau via 'go install'. Attempting to install from source...${NC}"
 
     # Clone the Gau repository
-    git clone https://github.com/lc/gau.git
+    git clone https://github.com/lc/gau
     cd gau/cmd/gau
 
     # Build the Gau binary
@@ -775,6 +775,65 @@ else
         exit 1
     fi
 fi
+
+# Attempt to install Katana using 'go install'
+echo -e "${BOLD_WHITE}Attempting to install Katana using 'go install'...${NC}"
+if go install github.com/projectdiscovery/katana/cmd/katana@latest; then
+    echo -e "${BOLD_BLUE}Katana installed successfully via 'go install'.${NC}"
+
+    # Copy the binary to /usr/local/bin for system-wide access
+    sudo cp "$(go env GOPATH)/bin/katana" /usr/local/bin/
+else
+    echo -e "${YELLOW}Failed to install Katana via 'go install'. Attempting to install from source...${NC}"
+
+    # Clone the Katana repository
+    git clone https://github.com/projectdiscovery/katana.git
+    cd katana/cmd/katana
+
+    # Build the Katana binary
+    if go build; then
+        chmod +x katana
+        sudo mv katana /usr/local/bin/
+        echo -e "${BOLD_BLUE}Katana installed successfully from source.${NC}"
+        cd ../../..
+        sudo rm -rf katana
+    else
+        echo -e "${RED}Failed to build Katana from source.${NC}"
+        cd ../../..
+        rm -rf katana
+        exit 1
+    fi
+fi
+
+# Attempt to install Waybackurls using 'go install'
+echo -e "${BOLD_WHITE}Attempting to install Waybackurls using 'go install'...${NC}"
+if go install github.com/tomnomnom/waybackurls@latest; then
+    echo -e "${BOLD_BLUE}Waybackurls installed successfully via 'go install'.${NC}"
+
+    # Copy the binary to /usr/local/bin for system-wide access
+    sudo cp "$(go env GOPATH)/bin/waybackurls" /usr/local/bin/
+else
+    echo -e "${YELLOW}Failed to install Waybackurls via 'go install'. Attempting to install from source...${NC}"
+
+    # Clone the Waybackurls repository
+    git clone https://github.com/tomnomnom/waybackurls.git
+    cd waybackurls
+
+    # Build the Waybackurls binary
+    if go build; then
+        chmod +x waybackurls
+        sudo mv waybackurls /usr/local/bin/
+        echo -e "${BOLD_BLUE}Waybackurls installed successfully from source.${NC}"
+        cd ..
+        sudo rm -rf waybackurls
+    else
+        echo -e "${RED}Failed to build Waybackurls from source.${NC}"
+        cd ..
+        rm -rf waybackurls
+        exit 1
+    fi
+fi
+
 
 # Ensure /usr/local/bin is in PATH
 if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
