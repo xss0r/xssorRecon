@@ -987,7 +987,7 @@ run_step_3() {
                 
     # Step 1: Passive FUZZ domains with wordlist
     show_progress "Passive FUZZ domains with wordlist"
-    dnsbruter -d "$domain_name" -w subs-dnsbruter-large.txt -c 50 -wt 100 -o output-dnsbruter.txt -ws wild.txt || handle_error "dnsbruter"
+    dnsbruter -d "$domain_name" -w subs-dnsbruter-small.txt -c 50 -wt 100 -o output-dnsbruter.txt -ws wild.txt || handle_error "dnsbruter"
     sleep 5
 
     # Step 2: Active brute crawling domains
