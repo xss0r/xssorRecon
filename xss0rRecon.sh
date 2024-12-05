@@ -200,10 +200,10 @@ install_tools() {
     sudo apt update
     sudo apt update --fix-missing
     sudo apt install pip
-    sudo pip install colorama
-    pip install aiodns
-    pip install aiofiles
-    sudo pip install uvloop
+    sudo pip install colorama --break-system-packages
+    pip install aiodns --break-system-packages
+    pip install aiofiles --break-system-packages
+    sudo pip install uvloop --break-system-packages
     sudo apt --fix-broken install
     sudo apt install -y python3 python3-pip python3-venv python3-setuptools git wget curl
     sudo apt-mark hold google-chrome-stable
@@ -222,7 +222,8 @@ install_tools() {
     python3 -m venv env
 
     # Upgrade pip in virtual environment
-    sudo pip install --upgrade pip
+    sudo pip install --upgrade pip 
+    pip install tldextract --break-system-packages
     sudo pip install structlog requests uvloop setuptools pipx
 
     # Install necessary Python packages within the virtual environment
@@ -275,7 +276,7 @@ install_tools() {
     show_progress "Installing/Upgrading pip"
     sudo apt update && sudo apt install python3-pip -y
     sudo pip3 install --upgrade pip --root-user-action=ignore
-    sudo pip install tldextract
+    sudo pip install tldextract --break-system-packages
     echo "managed by system package manager" | sudo tee /usr/lib/python3.12/EXTERNALLY-MANAGED
     sleep 3
 
@@ -927,7 +928,7 @@ run_step_3() {
                 
     # Step 1: Passive FUZZ domains with wordlist
     show_progress "Passive FUZZ domains with wordlist"
-    dnsbruter -d "$domain_name" -w subs-dnsbruter-small.txt -c 50 -wt 100 -o output-dnsbruter.txt -ws wild.txt || handle_error "dnsbruter"
+    dnsbruter -d "$domain_name" -w subs-dnsbruter-large.txt -c 50 -wt 100 -o output-dnsbruter.txt -ws wild.txt || handle_error "dnsbruter"
     sleep 5
 
     # Step 2: Active brute crawling domains
