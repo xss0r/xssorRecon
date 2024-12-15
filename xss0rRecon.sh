@@ -231,6 +231,7 @@ install_tools() {
 
     # Install pipx within the virtual environment
     sudo pip install pipx
+    sudo pip install asynciolimiter
 
     # Install Dnsbruter, Subdominator, SubProber within the virtual environment
     sudo pip install git+https://github.com/RevoltSecurities/Dnsbruter
