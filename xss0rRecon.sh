@@ -8,17 +8,6 @@ handle_error_with_solution() {
     echo -e "${BOLD_WHITE}$2${NC}"
 }
 
-# Copy katana, waybackurls, and gau to /usr/bin and /usr/local/bin
-for file in katana waybackurls gau; do
-    if [ -f "$file" ]; then
-        sudo cp "$file" /usr/bin || echo "Failed to copy $file to /usr/bin"
-        sudo cp "$file" /usr/local/bin || echo "Failed to copy $file to /usr/local/bin"
-        echo "Copied $file to /usr/bin and /usr/local/bin"
-    else
-        echo "File $file not found in the current directory."
-    fi
-done
-
 # Define colors
 BOLD_WHITE='\033[1;97m'
 BOLD_BLUE='\033[1;34m'
@@ -436,7 +425,7 @@ if ! command -v dnsbruter &> /dev/null; then
     # Final check to ensure dnsbruter is accessible globally
     if command -v dnsbruter &> /dev/null; then
         echo "Dnsbruter is successfully installed and globally available."
-        dnsbruter -h
+        dnsbruter -up && dnsbruter -h
     else
         echo "Dnsbruter installation failed. Please check the installation steps."
     fi
@@ -716,15 +705,6 @@ fi
 
 sleep 3
 
-    # Copy Katana Gau Wayback to /usr/local/bin and /usr/bin
-    sudo cp katana /usr/local/bin/
-    sudo cp katana /usr/bin/
-    sudo cp gau /usr/local/bin/
-    sudo cp gau /usr/bin/
-    sudo cp waybackurls /usr/local/bin/
-    sudo cp waybackurls /usr/bin/
-    sleep 3
-
 
     # Step 11: Install Gau
     show_progress "Installing Gau"
@@ -884,6 +864,7 @@ sleep 3
     sudo apt install -y tmux
     sudo apt --fix-broken install
     sudo apt update
+    dnsbruter -up
     sleep 3
 
     # Set specific permissions for installed tools
@@ -893,6 +874,7 @@ sleep 3
     sudo chmod 755 /usr/local/bin/uro
     sudo chmod 755 /usr/local/bin/gospider
     sudo chmod 755 /usr/local/bin/hakrawler
+    sudo chmod 755 /usr/local/bin/urlfinder
 
     # Display installed tools
     echo -e "${BOLD_BLUE}All tools have been successfully installed.${NC}"
@@ -988,7 +970,7 @@ run_step_3() {
                 
     # Step 1: Passive FUZZ domains with wordlist
     show_progress "Passive FUZZ domains with wordlist"
-    dnsbruter -d "$domain_name" -w subs-dnsbruter-small.txt -c 50 -wt 100 -o output-dnsbruter.txt -ws wild.txt || handle_error "dnsbruter"
+    dnsbruter -d "$domain_name" -w subs-dnsbruter-small.txt -c 90 -wt 80 -rt 500 -wd -ws wild.txt -o output-dnsbruter.txt || handle_error "dnsbruter"
     sleep 5
 
     # Step 2: Active brute crawling domains
@@ -1185,7 +1167,7 @@ while IFS= read -r domain || [[ -n "$domain" ]]; do
         processed_count=$((processed_count + 1))
         echo "Processing $processed_count/$total_domains: $domain"
         output_file="$output_folder/output-${domain//BRUT/}.txt"
-        sudo dnsbruter -d "$domain" -w "$wordlist_file" -c 20 -wt 100 -o "$output_file" -ws "$output_folder/wild-${domain//BRUT/}.txt"
+        dnsbruter -d "$domain" -w "$wordlist_file" -c 90 -wt 80 -wt 80 -rt 500 -wd -ws wild.txt -o "$output_file" -ws "$output_folder/wild-${domain//BRUT/}.txt"
         if [[ $? -ne 0 ]]; then
             echo "Error occurred while running dnsbruter for $domain."
         else
