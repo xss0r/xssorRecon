@@ -1865,40 +1865,12 @@ run_path_based_xss() {
     sudo python3 path-reflection.py path-ready.txt --threads 2
 
     # Step 9.1: Checking if the new file is generated
-    if [ -f path-xss.txt ]; then
-        echo -e "${CYAN}New file generated: path-xss.txt.${NC}"
-        count_urls "path-xss.txt" "Final URL count in path-xss.txt after Python processing."
+    if [ -f path-xss-urls.txt ]; then
+        echo -e "${CYAN}New file generated: path-xss-urls.txt.${NC}"
+        count_urls "path-xss-urls.txt" "Final URL count in path-xss-urls.txt after Python processing."
     else
-        echo -e "${RED}Error: path-xss.txt was not generated! Please check the Python script.${NC}"
+        echo -e "${RED}Error: path-xss-urls.txt was not generated! Please check the Python script.${NC}"
     fi
-
-    # Step 10: Processing the URLs to replace 'ibrahimXSS' with '{payload}'
-    show_progress "Processing URLs in path-xss.txt to replace 'ibrahimXSS' with '{payload}'..."
-
-    # Input file (path-xss.txt) and output file (path-xss-urls.txt)
-    input_file="path-xss.txt"
-    output_file="path-xss-urls.txt"
-
-    # Function to process URLs and replace 'ibrahimXSS' with '{payload}'
-process_urls() {
-    # Clear the output file if it exists
-    > "$output_file"
-
-    while read -r url; do
-        # Replace 'ibrahimXSS' with '{payload}' for each URL individually
-        processed_url=$(echo "$url" | sudo sed 's/ibrahimXSS/{payload}/g')
-
-        # Save each processed URL to the output file
-        echo "$processed_url" | sudo tee -a "$output_file" > /dev/null
-    done < "$input_file"
-
-    # Check if the output file was created successfully
-    if [ -f "$output_file" ]; then
-        echo "URLs processed and saved to $output_file"
-    else
-        echo "Error: Failed to process URLs or save the output."
-    fi
-}
 
     # Run the URL processing function
     process_urls
@@ -1918,7 +1890,7 @@ process_urls() {
 
     # Step 12: Launch the xss0r tool for path-based XSS testing
     echo -e "${BOLD_BLUE}Launching the xss0r tool on path-xss-urls.txt...${NC}"
-    ./xss0r --get --urls path-xss-urls.txt --payloads payloads.txt --threads 9 --shuffle --path
+    ./xss0r --get --urls path-xss-urls.txt --payloads payloads.txt --shuffle --threads 9 --path
     if [[ $? -ne 0 ]]; then
         echo -e "${RED}The xss0r tool encountered an error during execution.${NC}"
         exit 1
