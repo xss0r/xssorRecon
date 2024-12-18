@@ -7,36 +7,47 @@ import time
 # Set the timeout limit (in seconds)
 TIMEOUT = 10
 
-# Global variables to track progress and save URLs only once
+# Global variables to track progress
 total_urls = 0
 processed_urls = 0
-saved_urls = set()  # Set to track saved URLs
 
 # ANSI escape sequences for color
 BOLD = '\033[1m'
 RED = '\033[91m'
-BOLD_RED = '\033[1;91m'  # Bold red
+BOLD_RED = '\033[1;91m'
 GREEN = '\033[92m'
-YELLOW = '\033[93m'
 BLUE = '\033[94m'
-CYAN = '\033[96m'
-WHITE = '\033[97m'
 RESET = '\033[0m'
 
 def print_banner():
     banner = f"""
     {GREEN}#########################################{RESET}
     {GREEN}#                                       #{RESET}
-    {GREEN}#        {BOLD}{CYAN}XSS Reflection Checker{RESET}{GREEN}        #{RESET}
-    {GREEN}#        {BOLD}{CYAN}Developed by Ibrahim{RESET}{GREEN}        #{RESET}
+    {GREEN}#        {BOLD}XSS Reflection Checker V2 {RESET}{GREEN}        #{RESET}
+    {GREEN}#        {BOLD}Developed by Ibrahim{RESET}{GREEN}        #{RESET}
     {GREEN}#                                       #{RESET}
     {GREEN}#########################################{RESET}
-    {BOLD}{WHITE}# Usage:{RESET}                                #
-    {CYAN}python reflection.py urls.txt --threads 2{RESET}
-    {GREEN}#                                       #{RESET}
-    {GREEN}#########################################{RESET}
+    {BOLD}Usage:{RESET}                                #
+    python reflection.py urls.txt --threads 2
     """
     print(banner)
+
+def save_reflected_url(original_url, param_name, modified_params, output_file):
+    """Save the modified URL with {payload} replacing ibrahimXSS, keeping it unencoded."""
+    temp_params = modified_params.copy()
+    temp_params[param_name] = 'ibrahimXSS'  # Temporarily set it back for construction
+
+    # Construct the modified URL
+    payload_url = urlunparse(urlparse(original_url)._replace(query=urlencode(temp_params, doseq=True)))
+
+    # Replace 'ibrahimXSS' with '{payload}' without encoding
+    payload_url = payload_url.replace("ibrahimXSS", "{payload}")
+
+    # Save the clean payload URL to the output file
+    with open(output_file, 'a') as f:
+        f.write(payload_url + '\n')
+
+    print(f"{GREEN}[SAVED] {payload_url}{RESET}")
 
 def check_reflection(url, output_file):
     global processed_urls
@@ -44,9 +55,6 @@ def check_reflection(url, output_file):
     try:
         parsed_url = urlparse(url)
         query_params = parse_qs(parsed_url.query)
-        base_url = parsed_url._replace(query="").geturl()
-
-        found_reflection = False
 
         for param in query_params:
             modified_params = query_params.copy()
@@ -57,25 +65,21 @@ def check_reflection(url, output_file):
             # Make a request with a timeout
             response = requests.get(modified_url, timeout=TIMEOUT)
 
+            # Check if 'ibrahimXSS' is reflected
             if 'ibrahimXSS' in response.text:
-                found_reflection = True
-                # Highlight reflected parameter in bold red
                 print(f"{GREEN}[+] Reflection found on {modified_url} for parameter '{BOLD_RED}{param}{RESET}'")
-
-        if found_reflection and base_url not in saved_urls:
-            with open(output_file, 'a') as f:
-                f.write(url + '\n')
-            saved_urls.add(base_url)  # Add the base URL to the set to prevent duplicates
+                # Save URL with {payload} replacing ibrahimXSS
+                save_reflected_url(url, param, query_params, output_file)
 
     except requests.exceptions.Timeout:
-        print(f"{RED}[!] Timeout: The request to {url} took longer than {TIMEOUT} seconds. Moving to the next URL in 5 seconds.{RESET}")
-        time.sleep(5)  # Wait before continuing to the next URL
+        print(f"{RED}[!] Timeout: {url}{RESET}")
+        time.sleep(2)
     except requests.exceptions.RequestException as e:
-        print(f"{RED}[!] Error scanning {url}: {str(e)}. Moving to the next URL in 5 seconds.{RESET}")
-        time.sleep(5)  # Wait before continuing to the next URL
+        print(f"{RED}[!] Error: {url} - {str(e)}{RESET}")
+        time.sleep(2)
     finally:
         processed_urls += 1
-        print(f"{BLUE}[INFO] Scanning progress: {processed_urls}/{total_urls} URLs processed.{RESET}")
+        print(f"{BLUE}[INFO] Progress: {processed_urls}/{total_urls} URLs processed.{RESET}")
 
 def main():
     global total_urls
