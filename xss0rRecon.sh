@@ -984,7 +984,7 @@ run_step_3() {
     elif [[ "$user_choice" == "N" ]]; then
         # Step 1: Passive FUZZ domains with wordlist
         show_progress "Passive FUZZ domains with wordlist"
-        dnsbruter -d "$domain_name" -w subs-dnsbruter-small.txt -c 100 -wt 80 -rt 500 -wd -ws wild.txt -o output-dnsbruter.txt || handle_error "dnsbruter"
+        dnsbruter -d "$domain_name" -w subs-dnsbruter-small.txt -c 150 -wt 80 -rt 500 -wd -ws wild.txt -o output-dnsbruter.txt || handle_error "dnsbruter"
         sleep 5
 
         # Step 2: Active brute crawling domains
@@ -1169,7 +1169,7 @@ while IFS= read -r domain || [[ -n "$domain" ]]; do
         processed_count=$((processed_count + 1))
         echo "Processing $processed_count/$total_domains: $domain"
         output_file="$output_folder/output-${domain//BRUT/}.txt"
-        dnsbruter -d "$domain" -w "$wordlist_file" -c 100 -wt 80 -rt 500 -wd -ws wild.txt -o "$output_file" -ws "$output_folder/wild-${domain//BRUT/}.txt"
+        dnsbruter -d "$domain" -w "$wordlist_file" -c 150 -wt 80 -rt 500 -wd -ws wild.txt -o "$output_file" -ws "$output_folder/wild-${domain//BRUT/}.txt"
         if [[ $? -ne 0 ]]; then
             echo "Error occurred while running dnsbruter for $domain."
         else
