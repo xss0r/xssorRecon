@@ -966,6 +966,19 @@ echo -e "\n\n"
 
 # Function to run step 3 (Domain Enumeration and Filtering)
 run_step_3() {
+    # Check if the user wants to skip the order check for step 3
+    if [ "$skip_order_check_for_option_4" = true ]; then
+        echo -e "${BOLD_BLUE}Skipping step 3 order check and directly using the domain list provided...${NC}"
+        if [ -f "${domain_name}-domains.txt" ]; then
+            echo -e "${BOLD_WHITE}Using your provided list of domains from ${domain_name}-domains.txt${NC}"
+            proceed_with_existing_file "${domain_name}-domains.txt"
+        else
+            echo -e "${RED}Error: File ${domain_name}-domains.txt not found. Please ensure the file is in the current directory.${NC}"
+            exit 1
+        fi
+        return
+    fi
+
     echo -e "${BOLD_WHITE}You selected: Domain Enumeration and Filtering for $domain_name${NC}"
     echo -e "${BOLD_WHITE}Do you want to use your own list of domains or xss0rRecon to find it for you? Enter Y for your list or N for xss0rRecon list - domain list must be in format ${domain_name}-domains.txt: ${NC}"
     read user_choice
@@ -976,7 +989,48 @@ run_step_3() {
     if [[ "$user_choice" == "Y" ]]; then
         if [ -f "${domain_name}-domains.txt" ]; then
             echo -e "${BOLD_WHITE}Using your provided list of domains from ${domain_name}-domains.txt${NC}"
-            proceed_with_existing_file "${domain_name}-domains.txt"
+            # Skip directly to the Y/N prompt for continuing the scan
+            read -p "$(echo -e "${BOLD_WHITE}Your domain file has been created. Would you like to continue scanning your target domain, including all its subdomains? If so, please enter 'Y'. If you prefer to modify the domain file first, so you can delete these and add your domains, enter 'N', and you can manually proceed with step 4 afterwards. Do you want to continue scanning with all subdomains (Y/N)?: ${NC}")" continue_scan
+            if [[ "$continue_scan" =~ ^[Yy]$ ]]; then
+                # Step xx: Filtering ALIVE DOMAINS
+                show_progress "Filtering ALIVE DOMAINS"
+                subprober -f "${domain_name}-domains.txt" -sc -ar -o "${domain_name}-alive" -nc -mc 200 201 202 204 301 302 304 307 308 403 500 504 401 407 -c 20 || handle_error "subprober"
+                sleep 5
+                rm -r "${domain_name}-domains.txt"
+                mv "${domain_name}-alive" "${domain_name}-domains.txt"
+
+                # Step xx: Filtering valid URLS
+                show_progress "Filtering valid DOMAINS"
+                grep -oP 'http[^\s]*' "${domain_name}-domains.txt" > ${domain_name}-valid || handle_error "grep valid urls"
+                sleep 5
+                rm -r "${domain_name}-domains.txt"
+                mv ${domain_name}-valid "${domain_name}-domains.txt"
+
+                # Step xx: Remove duplicates
+                show_progress "Removing duplicate domains"
+                initial_count=$(wc -l < "${domain_name}-domains.txt")
+                awk '{if (!seen[$0]++) print}' "${domain_name}-domains.txt" > "subs-filtered.txt" || handle_error "Removing duplicates"
+                final_count_subs=$(wc -l < "subs-filtered.txt")
+                removed_count=$((initial_count - final_count_subs))
+                rm -r "${domain_name}-domains.txt"
+                mv "subs-filtered.txt" "${domain_name}-domains.txt"
+                echo -e "${RED}Removed $removed_count duplicate domains.${NC}"
+
+                # Normalize to `http://` and remove `www.`
+                awk '{sub(/^https?:\/\//, "http://", $0); sub(/^http:\/\/www\./, "http://", $0); domain = $0; if (!seen[domain]++) print domain}' \
+                "${domain_name}-domains.txt" > "final-${domain_name}-domains.txt" || handle_error "Final filtering"
+                rm -r "${domain_name}-domains.txt"
+                mv "final-${domain_name}-domains.txt" "${domain_name}-domains.txt"
+                sleep 5
+
+                skip_order_check_for_option_4=true
+                echo -e "${BOLD_BLUE}Automatically continuing with step 4: URL Crawling and Filtering...${NC}"
+                run_step_4  # Automatically continue to step 4
+            else
+                echo -e "${BOLD_WHITE}Please edit your file ${domain_name}-domains.txt and remove any unwanted subdomains before continuing.${NC}"
+                skip_order_check_for_option_4=true
+            fi
+            return
         else
             echo -e "${RED}Error: File ${domain_name}-domains.txt not found. Please ensure the file is in the current directory.${NC}"
             exit 1
