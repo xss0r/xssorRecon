@@ -1761,6 +1761,90 @@ else
     echo -e "${YELLOW}No Arjun output links to add. Proceeding without additional links.${NC}"
 fi
 
+# Extract unique subdomains and append search queries
+echo -e "${BOLD_WHITE}Processing unique subdomains to append search queries...${NC}"
+
+# Define the list of search queries to append
+search_queries=(
+    "search?q=aaa"
+    "?query=aaa"
+    "en-us/Search#/?search=aaa"
+    "Search/Results?q=aaa"
+    "q=aaa"
+    "foo?q=aaa"
+    "search.php?query=aaa"
+    "en-us/search?q=aaa"
+    "s=aaa"
+    "find?q=aaa"
+    "result?q=aaa"
+    "query?q=aaa"
+    "search?term=aaa"
+    "search?query=aaa"
+    "search?keywords=aaa"
+    "search?text=aaa"
+    "search?word=aaa"
+    "find?query=aaa"
+    "result?query=aaa"
+    "search?input=aaa"
+    "search/results?query=aaa"
+    "search-results?q=aaa"
+    "search?keyword=aaa"
+    "results?query=aaa"
+    "search?search=aaa"
+    "search?searchTerm=aaa"
+    "search?searchQuery=aaa"
+    "search?searchKeyword=aaa"
+    "search.php?q=aaa"
+    "search/?query=aaa"
+    "search/?q=aaa"
+    "search/?search=aaa"
+    "search.aspx?q=aaa"
+    "search.aspx?query=aaa"
+    "search.asp?q=aaa"
+    "index.asp?id=aaa"
+    "dashboard.asp?user=aaa"
+    "blog/search/?query=aaa"
+    "pages/searchpage.aspx?id=aaa"
+)
+
+# Extract unique subdomains (normalize to remove protocol and www)
+normalized_subdomains=$(awk -F/ '{print $1 "//" $3}' "${domain_name}-query.txt" | sed -E 's~(https?://)?(www\.)?~~' | sort -u)
+
+# Create a mapping of preferred protocols for unique subdomains
+declare -A preferred_protocols
+while read -r url; do
+    # Extract protocol, normalize subdomain
+    protocol=$(echo "$url" | grep -oE '^https?://')
+    subdomain=$(echo "$url" | sed -E 's~(https?://)?(www\.)?~~' | awk -F/ '{print $1}')
+
+    # Set protocol preference: prioritize http over https
+    if [[ "$protocol" == "http://" ]]; then
+        preferred_protocols["$subdomain"]="http://"
+    elif [[ -z "${preferred_protocols["$subdomain"]}" ]]; then
+        preferred_protocols["$subdomain"]="https://"
+    fi
+done < "${domain_name}-query.txt"
+
+# Create a new file for the appended URLs
+append_file="${domain_name}-query-append.txt"
+> "$append_file"
+
+# Append each search query to the preferred subdomains
+for subdomain in $normalized_subdomains; do
+    protocol="${preferred_protocols[$subdomain]}"
+    for query in "${search_queries[@]}"; do
+        echo "${protocol}${subdomain}/${query}" >> "$append_file"
+    done
+done
+
+# Combine the original file with the appended file
+cat "${domain_name}-query.txt" "$append_file" > "${domain_name}-query-final.txt"
+
+# Replace the original file with the combined result
+mv "${domain_name}-query-final.txt" "${domain_name}-query.txt"
+
+echo -e "${BOLD_BLUE}Appended URLs saved and combined into ${domain_name}-query.txt.${NC}"
+
 # Step 3: Checking page reflection on the URLs
 if [ -f "reflection.py" ]; then
     echo -e "${BOLD_WHITE}Checking page reflection on the URLs with command: python3 reflection.py ${domain_name}-query.txt --threads 2${NC}"
@@ -1788,7 +1872,7 @@ if [ -f "reflection.py" ]; then
 
             # Remove the original xss.txt file
             echo -e "${BOLD_BLUE}Removing the old xss.txt file...${NC}"
-            sudo rm -r xss.txt arjun_output.txt arjun-final.txt
+            sudo rm -r xss.txt arjun_output.txt arjun-final.txt "${domain_name}-query-append.txt"
             sleep 3
 
             # Removing 99% similar parameters with bash command
