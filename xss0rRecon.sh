@@ -1102,7 +1102,7 @@ remove_duplicates() {
 
   # Step 7: Filtering ALIVE domain names
 show_progress "Filtering ALIVE domain names"
-subprober -f "unique-${domain_name}-domains.txt" -sc -ar -o "subprober-${domain_name}-domains.txt" -nc -mc 200 201 202 204 301 302 304 307 308 403 500 504 401 407 -c 20 || handle_error "subprober"
+subprober -f "unique-${domain_name}-domains.txt" -sc -ar -o "subprober-${domain_name}-domains.txt" -nc -c 20 || handle_error "subprober"
 sleep 5
 
 # Step 7.1: Create subs-subs folder and set permissions
@@ -1282,7 +1282,7 @@ sleep 3
 show_progress "Filtering ALIVE domain names"
 
 # Optimize SubProber execution with reduced concurrency and thread count
-subprober -f subs-subs.txt -sc -ar -o "subprober-${domain_name}-domains.txt" -nc -mc 200 201 202 204 301 302 304 307 308 403 500 504 401 407 -c 10 || handle_error "subprober"
+subprober -f subs-subs.txt -sc -ar -o "subprober-${domain_name}-domains.txt" -nc -c 20 || handle_error "subprober"
 
 # Sleep to allow the system to stabilize after intensive processing
 sleep 5
