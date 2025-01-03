@@ -56,16 +56,24 @@ def check_reflection(url, output_file):
         parsed_url = urlparse(url)
         query_params = parse_qs(parsed_url.query)
 
+        # Ensure empty parameters are handled
+        for param in parsed_url.query.split("&"):
+            key_value = param.split("=")
+            if len(key_value) == 1 or key_value[1] == "":
+                query_params[key_value[0]] = ["ibrahimXSS"]
+
+        # Process each parameter
         for param in query_params:
             modified_params = query_params.copy()
             modified_params[param] = ['ibrahimXSS']
 
+            # Reconstruct the modified URL
             modified_url = urlunparse(parsed_url._replace(query=urlencode(modified_params, doseq=True)))
 
             # Make a request with a timeout
             response = requests.get(modified_url, timeout=TIMEOUT)
 
-            # Check if 'ibrahimXSS' is reflected
+            # Check if 'ibrahimXSS' is reflected in the response
             if 'ibrahimXSS' in response.text:
                 print(f"{GREEN}[+] Reflection found on {modified_url} for parameter '{BOLD_RED}{param}{RESET}'")
                 # Save URL with {payload} replacing ibrahimXSS
