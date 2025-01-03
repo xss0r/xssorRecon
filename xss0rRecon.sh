@@ -1009,7 +1009,7 @@ run_step_3() {
                 # Step xx: Remove duplicates
                 show_progress "Removing duplicate domains"
                 initial_count=$(wc -l < "${domain_name}-domains.txt")
-                awk '{if (!seen[$0]++) print}' "${domain_name}-domains.txt" > "subs-filtered.txt" || handle_error "Removing duplicates"
+                awk '{if (!seen[$0]++) print}' "${domain_name}-domains.txt" >> "subs-filtered.txt" || handle_error "Removing duplicates from ${domain_name}-domains.txt"
                 final_count_subs=$(wc -l < "subs-filtered.txt")
                 removed_count=$((initial_count - final_count_subs))
                 rm -r "${domain_name}-domains.txt"
