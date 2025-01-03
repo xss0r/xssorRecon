@@ -994,7 +994,7 @@ run_step_3() {
             if [[ "$continue_scan" =~ ^[Yy]$ ]]; then
                 # Step xx: Filtering ALIVE DOMAINS
                 show_progress "Filtering ALIVE DOMAINS"
-                subprober -f "${domain_name}-domains.txt" -sc -ar -o "${domain_name}-alive" -nc -mc 200 201 202 204 301 302 304 307 308 403 500 504 401 407 -c 20 || handle_error "subprober"
+                subprober -f "${domain_name}-domains.txt" -sc -ar -o "${domain_name}-alive" -nc -c 20 || handle_error "subprober"
                 sleep 5
                 rm -r "${domain_name}-domains.txt"
                 mv "${domain_name}-alive" "${domain_name}-domains.txt"
