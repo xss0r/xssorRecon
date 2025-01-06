@@ -402,6 +402,7 @@ sleep 3
     sudo apt install pipx -y
     pipx ensurepath
     subprober -up
+    cp /root/.local/bin/subprober /usr/local/bin
 
     # Step 4: Install Dnsbruter (Skip if already installed)
 if ! command -v dnsbruter &> /dev/null; then
