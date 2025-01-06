@@ -495,6 +495,7 @@ if [ ! -d "SubProber" ]; then
         # Clean up by removing the cloned directory after installation
         cd ..
         sudo rm -rf Subprober
+        cp /root/.local/bin/subprober /usr/local/bin
     else
         echo "SubProber installed successfully using pip."
     fi
