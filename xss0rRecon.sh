@@ -192,7 +192,11 @@ install_tools() {
     sudo pip install colorama --break-system-packages
     pip install aiodns --break-system-packages
     pip install aiofiles --break-system-packages
+    pip install -U bs4 --break-system-packages
+    pip install -U lxml --break-system-packages
     sudo pip install uvloop --break-system-packages
+    sudo pip install -U bs4 --break-system-packages
+    sudo pip install -U lxml --break-system-packages
     sudo apt --fix-broken install
     sudo apt install -y python3 python3-pip python3-venv python3-setuptools git wget curl
     sudo apt-mark hold google-chrome-stable
@@ -1567,7 +1571,7 @@ run_step_5() {
 
     # Step 24: Filtering ALIVE URLS
     show_progress "Filtering ALIVE URLS"
-    subprober -f "${domain_name}-links.txt" -sc -ar -o "${domain_name}-links.txt1337" -nc -mc 200 201 202 204 301 302 304 307 308 403 500 504 401 407 -c 20 || handle_error "subprober"
+    subprober -f "${domain_name}-links.txt" -sc -ar -o "${domain_name}-links.txt1337" -nc -mc 200,201,202,204,301,302,304,307,308,403,500,504,401,407 -c 20 || handle_error "subprober"
     sleep 5
 
     # Step 25: Removing old file
