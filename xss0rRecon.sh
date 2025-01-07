@@ -214,10 +214,7 @@ install_tools() {
     # Step 1: Install Python3 virtual environment and structlog in venv
     show_progress "Installing python3-venv and setting up virtual environment"
 
-    # Create virtual environment
-    python3 -m venv env
-
-    # Upgrade pip in virtual environment
+    # Upgrade pip 
     sudo pip install --upgrade pip 
     pip install tldextract --break-system-packages
     sudo pip install structlog requests uvloop setuptools pipx
@@ -233,13 +230,14 @@ install_tools() {
     
 
     # Install Dnsbruter, Subdominator, SubProber within the virtual environment
-    sudo pip install git+https://github.com/RevoltSecurities/Dnsbruter --break-system-packages
+    sudo pip install git+https://github.com/RevoltSecurities/Dnsbruter
     sudo pip install git+https://github.com/RevoltSecurities/Subdominator --break-system-packages
     sudo pip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
     pip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
     pip install subprober --break-system-packages --no-deps anyio==4.6.2
     pip install git+https://github.com/RevoltSecurities/Subprober.git --no-deps aiojarm
     pip install git+https://github.com/RevoltSecurities/Subprober.git --no-deps playwright
+    pipx install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
 
     # Install Uro, Arjun, and other required Python packages
     sudo pip install uro
