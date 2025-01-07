@@ -225,12 +225,19 @@ install_tools() {
     # Install pipx within the virtual environment
     sudo pip install pipx
     sudo pip install asynciolimiter
+    sudo pip install aiojarm
+    sudo pip install playwright
+    
 
     # Install Dnsbruter, Subdominator, SubProber within the virtual environment
     sudo pip install git+https://github.com/RevoltSecurities/Dnsbruter
-    sudo pip install git+https://github.com/RevoltSecurities/Subdominator.git
-    sudo pip install git+https://github.com/RevoltSecurities/Subprober.git
-    pipx install git+https://github.com/RevoltSecurities/Subprober
+    sudo pip install git+https://github.com/RevoltSecurities/Subdominator --break-system-packages
+    sudo pip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
+    ip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
+    pip install subprober --break-system-packages --no-deps anyio==4.6.2
+    pip install git+https://github.com/RevoltSecurities/Subprober.git --no-deps aiojarm
+    pip install git+https://github.com/RevoltSecurities/Subprober.git --no-deps playwright
+    pipx install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
 
     # Install Uro, Arjun, and other required Python packages
     sudo pip install uro
