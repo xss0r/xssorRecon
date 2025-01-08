@@ -423,7 +423,8 @@ if ! command -v dnsbruter &> /dev/null; then
     show_progress "Installing Dnsbruter"
 
     # Try installing directly with pip
-    sudo pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter.git
+    sudo pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter
+    pipx install git+https://github.com/RevoltSecurities/Dnsbruter.git
 
     # Check if the installation was successful
     if ! pip show dnsbruter &> /dev/null; then
@@ -494,7 +495,8 @@ if [ ! -d "SubProber" ]; then
     show_progress "Installing SubProber"
 
     # Try installing directly with pip
-    sudo pip install git+https://github.com/RevoltSecurities/Subprober.git --break-system-packages --root-user-action=ignore
+    sudo pip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages --root-user-action=ignore
+    pipx install git+https://github.com/RevoltSecurities/Subprober.git
 
     # Check if the installation was successful
     if ! pip show subprober &> /dev/null; then
