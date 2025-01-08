@@ -237,6 +237,8 @@ install_tools() {
     # Install Dnsbruter, Subdominator, SubProber within the virtual environment
     sudo pip install git+https://github.com/RevoltSecurities/Dnsbruter
     sudo pip install git+https://github.com/RevoltSecurities/Subdominator --break-system-packages
+    pip install git+https://github.com/RevoltSecurities/Subdominator --no-deps httpx==0.25.2
+    pipx install git+https://github.com/RevoltSecurities/Subdominator
     sudo pip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
     pip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
     pip install subprober --break-system-packages --no-deps anyio==4.6.2
@@ -460,7 +462,8 @@ if [ ! -d "Subdominator" ]; then
     show_progress "Installing Subdominator"
 
     # Try installing directly with pip
-    sudo pip install git+https://github.com/RevoltSecurities/Subdominator.git --break-system-packages --root-user-action=ignore
+    sudo pip install git+https://github.com/RevoltSecurities/Subdominator --break-system-packages --root-user-action=ignore
+    pip install git+https://github.com/RevoltSecurities/Subdominator --no-deps httpx==0.25.2
 
     # Check if the installation was successful
     if ! pip show subdominator &> /dev/null; then
