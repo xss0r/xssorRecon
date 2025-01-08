@@ -189,6 +189,11 @@ install_tools() {
     sudo apt update
     sudo apt update --fix-missing
     sudo apt install pip
+    sudo pip3 uninstall -y subprober
+    rm -r /usr/local/bin/subprober
+    rm -r ~/.local/bin/subprober 
+    rm -r /root/.local/bin/subprober
+    sudo pip install "subprober<2.0"
     sudo pip install colorama --break-system-packages
     pip install aiodns --break-system-packages
     pip install aiofiles --break-system-packages
