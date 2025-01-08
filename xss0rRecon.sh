@@ -518,6 +518,7 @@ if [ ! -d "SubProber" ]; then
     fi
 
     show_progress "SubProber installation complete."
+    for tool in dnsbruter subdominator subprober; do which "$tool" >/dev/null 2>&1 && sudo cp "$(which "$tool")" /usr/local/bin/ && echo "Copied $tool to /usr/local/bin" || echo "$tool not found in PATH"; done
     sleep 3
 else
     show_progress "SubProber is already installed. Skipping installation."
