@@ -221,7 +221,7 @@ install_tools() {
 
     # Upgrade pip 
     sudo pip install --upgrade pip 
-    pip install tldextract --break-system-packages
+    sudo pip install tldextract --break-system-packages
     sudo pip install structlog requests uvloop setuptools pipx
 
     # Install necessary Python packages within the virtual environment
@@ -237,13 +237,13 @@ install_tools() {
     # Install Dnsbruter, Subdominator, SubProber within the virtual environment
     sudo pip install git+https://github.com/RevoltSecurities/Dnsbruter
     sudo pip install git+https://github.com/RevoltSecurities/Subdominator --break-system-packages
-    pip install git+https://github.com/RevoltSecurities/Subdominator --no-deps httpx==0.25.2
+    sudo pip install git+https://github.com/RevoltSecurities/Subdominator --no-deps httpx==0.25.2
     pipx install git+https://github.com/RevoltSecurities/Subdominator
     sudo pip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
-    pip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
-    pip install subprober --break-system-packages --no-deps anyio==4.6.2
-    pip install git+https://github.com/RevoltSecurities/Subprober.git --no-deps aiojarm
-    pip install git+https://github.com/RevoltSecurities/Subprober.git --no-deps playwright
+    sudo pip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
+    sudo pip install subprober --break-system-packages --no-deps anyio==4.6.2
+    sudo pip install git+https://github.com/RevoltSecurities/Subprober.git --no-deps aiojarm
+    sudo pip install git+https://github.com/RevoltSecurities/Subprober.git --no-deps playwright
     pipx install git+https://github.com/RevoltSecurities/Subprober --break-system-packages
 
     # Install Uro, Arjun, and other required Python packages
@@ -464,7 +464,7 @@ if [ ! -d "Subdominator" ]; then
 
     # Try installing directly with pip
     sudo pip install git+https://github.com/RevoltSecurities/Subdominator --break-system-packages --root-user-action=ignore
-    pip install git+https://github.com/RevoltSecurities/Subdominator --no-deps httpx==0.25.2
+    sudo pip install git+https://github.com/RevoltSecurities/Subdominator --no-deps httpx==0.25.2
 
     # Check if the installation was successful
     if ! pip show subdominator &> /dev/null; then
