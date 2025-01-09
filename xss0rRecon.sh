@@ -454,6 +454,8 @@ if ! command -v dnsbruter &> /dev/null; then
 
     show_progress "Dnsbruter installation complete."
     sleep 3
+    pip3 install dnsbruter "aiodns>=3.2.0" "aiofiles>=24.1.0" "alive_progress>=3.2.0" "art>=6.1" "asynciolimiter>=1.1.0.post3" "colorama>=0.4.4" "requests>=2.32.3" "setuptools>=75.2.0" "uvloop>=0.21.0"
+
 else
     show_progress "Dnsbruter is already installed. Skipping installation."
 fi
@@ -480,6 +482,8 @@ if [ ! -d "Subdominator" ]; then
         # Clean up by removing the cloned directory after installation
         cd ..
         sudo rm -rf Subdominator
+        sudo pipx inject subdominator "aiofiles>=23.2.1" "aiohttp>=3.9.4" "appdirs>=1.4.4" "httpx>=0.27.2" "art>=6.1" "beautifulsoup4>=4.11.1" "colorama>=0.4.6" "fake_useragent>=1.5.0" "PyYAML>=6.0.1" "requests>=2.31.0" "rich>=13.7.1" "urllib3>=1.26.18" "tldextract>=5.1.2"
+
     else
         echo "Subdominator installed successfully using pip."
     fi
@@ -518,6 +522,7 @@ if [ ! -d "SubProber" ]; then
     fi
 
     show_progress "SubProber installation complete."
+    pip3 install --break-system-packages "subprober" "aiodns>=3.2.0" "aiofiles>=24.1.0" "aiojarm>=0.2.2" "alive_progress>=3.2.0" "appdirs>=1.4.4" "art>=6.4" "asynciolimiter>=1.1.1" "beautifulsoup4>=4.12.3" "colorama>=0.4.6" "cryptography>=44.0.0" "fake_useragent>=1.5.1" "httpx>=0.28.1" "mmh3>=5.0.1" "playwright>=1.49.1" "requests>=2.32.3" "rich>=13.9.4" "setuptools>=75.2.0" "simhash>=2.1.2" "urllib3>=1.26.18" "uvloop>=0.21.0" "websockets>=14.1" "bs4>=0.0.2" "lxml>=5.3.0"
     for t in dnsbruter subdominator subprober; do [ -f "$HOME/.local/bin/$t" ] && [ "$HOME/.local/bin/$t" != "/usr/local/bin/$t" ] && sudo cp "$HOME/.local/bin/$t" /usr/local/bin/; done
     sleep 3
 else
