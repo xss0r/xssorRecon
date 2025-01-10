@@ -952,6 +952,9 @@ uro -h > /dev/null 2>&1 && echo "Uro is installed" || echo "Uro is not installed
 echo -e "${BOLD_WHITE}10. Arjun:${NC}"
 arjun -h > /dev/null 2>&1 && echo "Arjun is installed" || echo "Arjun is not installed correctly"
 
+echo -e "${BOLD_WHITE}11. URLFinder:${NC}"
+urlfinder -h > /dev/null 2>&1 && echo "URLFinder is installed" || echo "URLFinder is not installed correctly"
+
 echo -e "${BOLD_WHITE}11. Tmux:${NC}"
 echo "Tmux is installed (skipping check)"
 
