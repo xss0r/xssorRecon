@@ -190,6 +190,9 @@ install_tools() {
     sudo apt update --fix-missing
     sudo apt install pip
     sudo pip3 uninstall -y subprober
+    sudo pip uninstall subprober --break-system-packages
+    sudo apt install -y python3.12
+    sudo apt install -y build-essential libssl-dev zlib1g-dev libncurses5-dev libnss3-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev
     rm -r /usr/local/bin/subprober
     rm -r ~/.local/bin/subprober 
     rm -r /root/.local/bin/subprober
