@@ -196,9 +196,9 @@ install_tools() {
     rm -r /usr/local/bin/subprober
     rm -r ~/.local/bin/subprober 
     rm -r /root/.local/bin/subprober
-    sudo pip install "subprober<2.0"
     sudo apt install python3.12-venv
-    source .venv/bin/activate
+    python3 -m venv .venv
+    source  .venv/bin/activate 
     python3 -m venv .venv
     sudo pip install colorama --break-system-packages
     pip install aiodns --break-system-packages
