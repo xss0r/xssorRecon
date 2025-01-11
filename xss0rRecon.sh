@@ -1674,7 +1674,7 @@ show_progress "Completed cleaning arjun-urls.txt. All URLs are now clean, unique
     # Step 2: Running Arjun on clean URLs if arjun-urls.txt is present
 if [ -s arjun-urls.txt ]; then
     show_progress "Running Arjun on clean URLs"
-    arjun -i arjun-urls.txt -oT arjun_output.txt -t 10 --stable -w parametri.txt || handle_error "Arjun command"
+    arjun -i arjun-urls.txt -oT arjun_output.txt -t 10 -w parametri.txt || handle_error "Arjun command"
 
     # Merge files and process .php links
 if [ -f arjun-urls.txt ] || [ -f output-php-links.txt ] || [ -f arjun_output.txt ]; then
