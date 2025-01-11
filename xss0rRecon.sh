@@ -187,6 +187,7 @@ install_tools() {
 
     show_progress "Installing dependencies"
     sudo apt update
+    sudo apt upgrade
     sudo apt update --fix-missing
     sudo apt install pip
     sudo pip3 uninstall -y subprober
