@@ -211,6 +211,12 @@ install_tools() {
     sudo pip install playwright --break-system-packages
     sudo pip install subprober --break-system-packages --no-deps anyio==4.6.2
     sudo pip install uvloop --break-system-packages
+    sudo pip install mmh3==5.0.1
+    sudo pip install cryptography==44.0.0
+    sudo pip install uvloop==0.19.0
+    sudo pip install art==6.4
+    sudo pip uninstall dnsbruter uvloop -y
+    sudo pip install dnsbruter uvloop==0.19.0
     sudo pip install -U bs4 --break-system-packages
     sudo pip install -U lxml --break-system-packages
     sudo apt --fix-broken install
