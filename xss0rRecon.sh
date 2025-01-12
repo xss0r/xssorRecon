@@ -203,20 +203,14 @@ install_tools() {
     source  .venv/bin/activate 
     python3 -m venv .venv
     sudo pip install colorama --break-system-packages
-    sudo pip install aiodns --break-system-packages
-    sudo pip install aiofiles --break-system-packages
-    sudo pip install -U bs4 --break-system-packages
-    sudo pip install -U lxml --break-system-packages
+    pip install aiodns --break-system-packages
+    pip install aiofiles --break-system-packages
+    pip install -U bs4 --break-system-packages
+    pip install -U lxml --break-system-packages
     sudo pip install aiojarm --break-system-packages
     sudo pip install playwright --break-system-packages
     sudo pip install subprober --break-system-packages --no-deps anyio==4.6.2
     sudo pip install uvloop --break-system-packages
-    sudo pip install mmh3==5.0.1
-    sudo pip install cryptography==44.0.0
-    sudo pip install uvloop==0.19.0
-    sudo pip install art==6.4
-    sudo pip uninstall dnsbruter uvloop -y
-    sudo pip install dnsbruter uvloop==0.19.0
     sudo pip install -U bs4 --break-system-packages
     sudo pip install -U lxml --break-system-packages
     sudo apt --fix-broken install
@@ -450,6 +444,7 @@ if ! command -v dnsbruter &> /dev/null; then
 
         # Install from the local cloned repository
         sudo pip install . --break-system-packages --root-user-action=ignore
+        dnsbruter -up
 
         # Clean up by removing the cloned directory after installation
         cd ..
@@ -492,6 +487,7 @@ if [ ! -d "Subdominator" ]; then
 
         # Install from local cloned repository
         sudo pip install . --break-system-packages --root-user-action=ignore
+        subdominator -up
 
         # Clean up by removing the cloned directory after installation
         cd ..
@@ -526,6 +522,7 @@ if [ ! -d "SubProber" ]; then
 
         # Install from local cloned repository
         sudo pip install . --break-system-packages --root-user-action=ignore
+        subprober -up
 
         # Clean up by removing the cloned directory after installation
         cd ..
@@ -1012,6 +1009,33 @@ echo -e "\n\n"
 }
 
 
+# Setup and activate Python virtual environment
+setup_and_activate_venv() {
+    echo -e "${BOLD_WHITE}Setting up and activating Python virtual environment...${NC}"
+    # Create a virtual environment in the .venv directory if it doesn't already exist
+    if [ ! -d ".venv" ]; then
+        echo -e "${BOLD_BLUE}Creating Python virtual environment in .venv...${NC}"
+        python3 -m venv .venv
+        if [ $? -ne 0 ]; then
+            echo -e "${RED}Error: Failed to create virtual environment.${NC}"
+            exit 1
+        fi
+    fi
+
+    # Activate the virtual environment
+    echo -e "${BOLD_BLUE}Activating virtual environment...${NC}"
+    source .venv/bin/activate
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Error: Failed to activate virtual environment.${NC}"
+        exit 1
+    fi
+
+    echo -e "${BOLD_GREEN}Virtual environment activated successfully!${NC}"
+}
+
+# Call the virtual environment setup before running step 3
+setup_and_activate_venv
+
 # Function to run step 3 (Domain Enumeration and Filtering)
 run_step_3() {
     # Check if the user wants to skip the order check for step 3
@@ -1411,8 +1435,49 @@ else
 fi
 }
 
+
 # Function to run step 4 (URL Crawling and Filtering)
 run_step_4() {
+    echo -e "${BOLD_WHITE}You selected: URL Crawling and Filtering for $domain_name${NC}"
+
+    # Ask user if they want to use their own crawled links file
+    echo -e "${BOLD_WHITE}Do you want to use your own crawled links file? (Y/N)${NC}"
+    read -r use_own_links_file
+
+    if [[ "$use_own_links_file" =~ ^[Yy]$ ]]; then
+        echo -e "${BOLD_GREEN}Skipping default crawling steps. Proceeding with your own links file...${NC}"
+        echo -e "${BOLD_GREEN}Please save your list of URLS in format "${domain_name}-links-final.txt"${NC}"
+
+        # Ensure the user's file is in the correct format
+        if [[ ! -f "${domain_name}-links-final.txt" ]]; then
+            echo -e "${BOLD_RED}Error: File ${domain_name}-links-final.txt not found!${NC}"
+            exit 1
+        fi
+
+        # Create new folder 'urls' and assign permissions
+        show_progress "Creating 'urls' directory and setting permissions"
+        sudo mkdir -p urls
+        sudo chmod 777 urls
+
+        # Copy the user's file to the 'urls' folder
+        show_progress "Copying ${domain_name}-links-final.txt to 'urls' directory"
+        sudo cp "${domain_name}-links-final.txt" urls/
+
+        # Display professional message about the URLs
+        echo -e "${BOLD_WHITE}All identified URLs have been successfully saved in the newly created 'urls' directory.${NC}"
+        echo -e "${CYAN}These URLs represent potential targets that were not filtered out during the previous steps.${NC}"
+        echo -e "${CYAN}You can use the file 'urls/${domain_name}-links-final.txt' for further vulnerability testing with tools like Nuclei or any other inspection frameworks to identify additional vulnerabilities.${NC}"
+        echo -e "${CYAN}We are now continuing with our main purpose of XSS filtration and vulnerability identification.${NC}"
+
+        # Display the number of URLs in the final merged file
+        total_merged_urls=$(wc -l < "${domain_name}-links-final.txt")
+        echo -e "${BOLD_WHITE}Total URLs merged: ${RED}${total_merged_urls}${NC}"
+        sleep 3
+
+        # Automatically start step 5 after completing step 4
+        run_step_5
+    fi
+
     echo -e "${BOLD_WHITE}You selected: URL Crawling and Filtering for $domain_name${NC}"
 
     # Step 1: Crawling with GoSpider
