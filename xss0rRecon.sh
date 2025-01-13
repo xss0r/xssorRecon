@@ -1,3 +1,7 @@
+# Function to Install prerequired files
+sudo apt install -y python3-venv
+python3 -m venv .venv
+source .venv/bin/activate
 #!/bin/bash
 
 # Function to handle errors with manual installation solutions
@@ -189,6 +193,13 @@ install_tools() {
     sudo apt update
     sudo apt upgrade
     sudo apt update --fix-missing
+    sudo apt install python3.12-venv
+    python3 -m venv .venv
+    source  .venv/bin/activate 
+    python3 -m venv .venv
+    sudo apt install -y python-pip
+    sudo apt install -y python3-pip
+    pip3 install requests urllib3
     sudo apt install pip
     sudo pip3 uninstall -y subprober
     sudo pip uninstall subprober --break-system-packages
@@ -198,10 +209,6 @@ install_tools() {
     sudo rm -r /usr/local/bin/subprober
     sudo rm -r ~/.local/bin/subprober 
     sudo rm -r /root/.local/bin/subprober
-    sudo apt install python3.12-venv
-    python3 -m venv .venv
-    source  .venv/bin/activate 
-    python3 -m venv .venv
     sudo pip install colorama --break-system-packages
     pip install aiodns --break-system-packages
     pip install aiofiles --break-system-packages
