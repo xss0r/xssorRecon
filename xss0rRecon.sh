@@ -1,5 +1,13 @@
 # Function to Install prerequired files
-sudo apt install -y python3-venv
+# Check if python3-venv is installed
+if ! dpkg -l | grep -q python3-venv; then
+    echo "python3-venv not found. Installing..."
+    sudo apt install -y python3-venv
+else
+    echo "python3-venv is already installed."
+fi
+
+# Create and activate virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
 #!/bin/bash
@@ -197,18 +205,14 @@ install_tools() {
     python3 -m venv .venv
     source  .venv/bin/activate 
     python3 -m venv .venv
-    sudo apt install -y python-pip
     sudo apt install -y python3-pip
-    pip3 install requests urllib3
     sudo apt install pip
-    sudo pip3 uninstall -y subprober
-    sudo pip uninstall subprober --break-system-packages
+    sudo apt install pip3
+    pip3 install requests urllib3
+    sudo pip uninstall -y subprober subdominator dnsbruter --break-system-packages
     sudo apt install -y python3.12
     sudo apt install -y build-essential libssl-dev zlib1g-dev libncurses5-dev libnss3-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev make
     sudo apt install -y pkg-config
-    sudo rm -r /usr/local/bin/subprober
-    sudo rm -r ~/.local/bin/subprober 
-    sudo rm -r /root/.local/bin/subprober
     sudo pip install colorama --break-system-packages
     pip install aiodns --break-system-packages
     pip install aiofiles --break-system-packages
@@ -924,6 +928,30 @@ sleep 3
     sudo chmod 755 /usr/local/bin/gospider
     sudo chmod 755 /usr/local/bin/hakrawler
     sudo chmod 755 /usr/local/bin/urlfinder
+
+    # Find paths for subprober, subdominator, and dnsbruter
+    SUBPROBER_PATH=$(which subprober)
+    SUBDOMINATOR_PATH=$(which subdominator)
+    DNSBRUTER_PATH=$(which dnsbruter)
+
+    # Check if the tools are found and copy them to the .venv/bin directory
+    if [ -n "$SUBPROBER_PATH" ]; then
+        sudo cp "$SUBPROBER_PATH" .venv/bin/
+    else
+        echo "subprober not found!"
+    fi
+
+    if [ -n "$SUBDOMINATOR_PATH" ]; then
+        sudo cp "$SUBDOMINATOR_PATH" .venv/bin/
+    else
+        echo "subdominator not found!"
+    fi
+
+    if [ -n "$DNSBRUTER_PATH" ]; then
+        sudo cp "$DNSBRUTER_PATH" .venv/bin/
+    else
+        echo "dnsbruter not found!"
+    fi
 
     # Display installed tools
     echo -e "${BOLD_BLUE}All tools have been successfully installed.${NC}"
