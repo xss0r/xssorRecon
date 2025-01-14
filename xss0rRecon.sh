@@ -1542,11 +1542,8 @@ run_step_4() {
 
     # Step 5: Crawling with Gau
 show_progress "Crawling links with Gau"
-
-# Install Gau if not already installed
-go install github.com/lc/gau/v2/cmd/gau@latest
-export PATH=$PATH:$(go env GOPATH)/bin
-
+rm -r /root/.gau.toml
+rm -r /home/$(whoami)/.gau.toml
 # Perform crawling with Gau and save results
 cat "${domain_name}-domains.txt" | gau | tee -a "${domain_name}-gau.txt" || handle_error "Gau crawl"
 
