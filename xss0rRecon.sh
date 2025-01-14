@@ -198,8 +198,7 @@ install_tools() {
     echo -e "${BOLD_WHITE}You selected: Install all tools${NC}"
 
     show_progress "Installing dependencies"
-    sudo apt update
-    sudo apt upgrade
+    sudo apt update && sudo apt upgrade -y
     sudo apt update --fix-missing
     sudo apt install python3.12-venv
     python3 -m venv .venv
