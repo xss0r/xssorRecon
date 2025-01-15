@@ -1990,6 +1990,7 @@ search_queries=(
     "blog/posts?q=aaa"
     "search/article?q=aaa"
     "/api/search?q=aaa"
+    "en/search/explore?q=aaa"
     "/v1/search?q=aaa"
     "/api/v1/search?q=aaa"
 )
