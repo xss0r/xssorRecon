@@ -1991,6 +1991,7 @@ search_queries=(
     "search/article?q=aaa"
     "/api/search?q=aaa"
     "en/search/explore?q=aaa"
+    "bs-latn-ba/Search/Results?q=aaa"
     "/v1/search?q=aaa"
     "/api/v1/search?q=aaa"
 )
