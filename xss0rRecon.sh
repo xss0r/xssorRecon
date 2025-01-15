@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Function to Install prerequired files
 # Check if python3-venv is installed
 if ! dpkg -l | grep -q python3-venv; then
@@ -10,7 +12,6 @@ fi
 # Create and activate virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
-#!/bin/bash
 
 # Function to handle errors with manual installation solutions
 handle_error_with_solution() {
