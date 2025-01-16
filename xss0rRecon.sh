@@ -1980,11 +1980,12 @@ search_queries=(
     "search-posts?q=aaa"
     "blog/posts?q=aaa"
     "search/article?q=aaa"
-    "/api/search?q=aaa"
+    "api/search?q=aaa"
     "en/search/explore?q=aaa"
     "bs-latn-ba/Search/Results?q=aaa"
-    "/v1/search?q=aaa"
-    "/api/v1/search?q=aaa"
+    "en-us/marketplace/apps?search=aaa"
+    "v1/search?q=aaa"
+    "api/v1/search?q=aaa"
 )
 
 # Extract unique subdomains (normalize to remove protocol and www)
