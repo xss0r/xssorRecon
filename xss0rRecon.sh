@@ -206,6 +206,7 @@ install_tools() {
     source  .venv/bin/activate 
     python3 -m venv .venv
     sudo apt install -y python3-pip
+    sudo apt upgrade python3
     sudo apt install pip
     sudo apt install pip3
     pip3 install requests urllib3
