@@ -1984,6 +1984,7 @@ search_queries=(
     "en/search/explore?q=aaa"
     "bs-latn-ba/Search/Results?q=aaa"
     "en-us/marketplace/apps?search=aaa"
+    "search/node?keys=aaaa"
     "v1/search?q=aaa"
     "api/v1/search?q=aaa"
 )
