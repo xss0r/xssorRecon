@@ -33,7 +33,7 @@ def print_banner():
     print(banner)
 
 def save_reflected_url(original_url, param_name, modified_params, output_file):
-    """Save the modified URL with {payload} replacing ibrahimXSS, keeping it unencoded."""
+    """Save the modified URL with {payload} replacing ibrahimXSS, keeping other parameters intact."""
     temp_params = modified_params.copy()
     temp_params[param_name] = 'ibrahimXSS'  # Temporarily set it back for construction
 
@@ -62,7 +62,7 @@ def check_reflection(url, output_file):
             if len(key_value) == 1 or key_value[1] == "":
                 query_params[key_value[0]] = ["ibrahimXSS"]
 
-        # Process each parameter
+        # Process each parameter individually
         for param in query_params:
             modified_params = query_params.copy()
             modified_params[param] = ['ibrahimXSS']
@@ -76,8 +76,8 @@ def check_reflection(url, output_file):
             # Check if 'ibrahimXSS' is reflected in the response
             if 'ibrahimXSS' in response.text:
                 print(f"{GREEN}[+] Reflection found on {modified_url} for parameter '{BOLD_RED}{param}{RESET}'")
-                # Save URL with {payload} replacing ibrahimXSS
-                save_reflected_url(url, param, query_params, output_file)
+                # Save URL with {payload} replacing ibrahimXSS only for this parameter
+                save_reflected_url(url, param, modified_params, output_file)
 
     except requests.exceptions.Timeout:
         print(f"{RED}[!] Timeout: {url}{RESET}")
