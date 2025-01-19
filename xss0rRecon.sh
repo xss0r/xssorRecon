@@ -204,7 +204,6 @@ install_tools() {
     sudo apt install python3.12-venv
     python3 -m venv .venv
     source  .venv/bin/activate 
-    python3 -m venv .venv
     sudo apt install -y python3-pip
     sudo apt upgrade python3
     sudo apt install pip
@@ -443,6 +442,8 @@ if ! command -v dnsbruter &> /dev/null; then
     show_progress "Installing Dnsbruter"
 
     # Try installing directly with pip
+    python3 -m venv .venv
+    source  .venv/bin/activate 
     sudo pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter
     pipx install git+https://github.com/RevoltSecurities/Dnsbruter.git
 
@@ -486,6 +487,8 @@ if [ ! -d "Subdominator" ]; then
     show_progress "Installing Subdominator"
 
     # Try installing directly with pip
+    python3 -m venv .venv
+    source  .venv/bin/activate 
     sudo pip install git+https://github.com/RevoltSecurities/Subdominator --break-system-packages --root-user-action=ignore
     sudo pip install git+https://github.com/RevoltSecurities/Subdominator --no-deps httpx==0.25.2
 
@@ -521,6 +524,8 @@ if [ ! -d "SubProber" ]; then
     show_progress "Installing SubProber"
 
     # Try installing directly with pip
+    python3 -m venv .venv
+    source  .venv/bin/activate 
     sudo pip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages --root-user-action=ignore
     pipx install git+https://github.com/RevoltSecurities/Subprober.git
 
@@ -1075,6 +1080,7 @@ setup_and_activate_venv
 # Function to run step 3 (Domain Enumeration and Filtering)
 run_step_3() {
     # Check if the user wants to skip the order check for step 3
+    source "$(pwd)/.venv/bin/activate"
     if [ "$skip_order_check_for_option_4" = true ]; then
         echo -e "${BOLD_BLUE}Skipping step 3 order check and directly using the domain list provided...${NC}"
         if [ -f "${domain_name}-domains.txt" ]; then
