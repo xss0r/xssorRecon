@@ -271,6 +271,8 @@ install_tools() {
     sudo pip install alive_progress ratelimit
 
     # Add Go bin to PATH
+    python3 -m venv .venv
+    source  .venv/bin/activate 
     export PATH=$PATH:$(go env GOPATH)/bin
 
     # Dynamically set the PATH based on the current user
