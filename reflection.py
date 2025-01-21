@@ -33,15 +33,13 @@ def print_banner():
     print(banner)
 
 def save_reflected_url(original_url, param_name, modified_params, output_file):
-    """Save the modified URL with {payload} replacing ibrahimXSS, keeping other parameters intact."""
+    """Save the modified URL with {payload} replacing the specific parameter."""
     temp_params = modified_params.copy()
-    temp_params[param_name] = 'ibrahimXSS'  # Temporarily set it back for construction
 
-    # Construct the modified URL
-    payload_url = urlunparse(urlparse(original_url)._replace(query=urlencode(temp_params, doseq=True)))
-
-    # Replace 'ibrahimXSS' with '{payload}' without encoding
-    payload_url = payload_url.replace("ibrahimXSS", "{payload}")
+    # Save with {payload} in place of the current parameter without encoding
+    temp_params[param_name] = "{payload}"
+    query = "&".join(f"{k}={','.join(v)}" if isinstance(v, list) else f"{k}={v}" for k, v in temp_params.items())
+    payload_url = urlunparse(urlparse(original_url)._replace(query=query))
 
     # Save the clean payload URL to the output file
     with open(output_file, 'a') as f:
@@ -64,11 +62,15 @@ def check_reflection(url, output_file):
 
         # Process each parameter individually
         for param in query_params:
-            modified_params = query_params.copy()
+            # Make a deep copy of query parameters to modify only one at a time
+            modified_params = {k: v[:] for k, v in query_params.items()}
+
+            # Temporarily set the current parameter to `ibrahimXSS`
             modified_params[param] = ['ibrahimXSS']
 
             # Reconstruct the modified URL
-            modified_url = urlunparse(parsed_url._replace(query=urlencode(modified_params, doseq=True)))
+            query = "&".join(f"{k}={','.join(v)}" if isinstance(v, list) else f"{k}={v}" for k, v in modified_params.items())
+            modified_url = urlunparse(parsed_url._replace(query=query))
 
             # Make a request with a timeout
             response = requests.get(modified_url, timeout=TIMEOUT)
@@ -76,7 +78,8 @@ def check_reflection(url, output_file):
             # Check if 'ibrahimXSS' is reflected in the response
             if 'ibrahimXSS' in response.text:
                 print(f"{GREEN}[+] Reflection found on {modified_url} for parameter '{BOLD_RED}{param}{RESET}'")
-                # Save URL with {payload} replacing ibrahimXSS only for this parameter
+
+                # Save URL with {payload} replacing only the current parameter
                 save_reflected_url(url, param, modified_params, output_file)
 
     except requests.exceptions.Timeout:
