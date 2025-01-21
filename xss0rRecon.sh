@@ -2039,7 +2039,7 @@ echo -e "${BOLD_BLUE}Appended URLs saved and combined into ${domain_name}-query.
 # Step 3: Checking page reflection on the URLs
 if [ -f "reflection.py" ]; then
     echo -e "${BOLD_WHITE}Checking page reflection on the URLs with command: python3 reflection.py ${domain_name}-query.txt --threads 2${NC}"
-    sudo python3 reflection.py "${domain_name}-query.txt" --threads 2 || handle_error "reflection.py execution"
+    sudo python3 reflection.py "${domain_name}-query.txt" --threads 5 || handle_error "reflection.py execution"
     sleep 5
 
     # Check if xss.txt is created after reflection.py
@@ -2088,6 +2088,13 @@ if [ -f "reflection.py" ]; then
             echo -e "${BOLD_WHITE}New file is ready for XSS testing: xss-urls.txt with TOTAL URLs: ${total_urls}${NC}"
             echo -e "${BOLD_WHITE}Initial Total Merged URLs in the beginning : ${RED}${total_merged_urls}${NC}"
             echo -e "${BOLD_WHITE}Filtered Final URLs for XSS Testing: ${RED}${total_urls}${NC}"
+
+            #Sorting URLs for xss0r:
+            echo -e "${BOLD_BLUE}Sorting valid format URLs for xss0r...${NC}"
+            awk '{sub("http://", "http://www."); sub("https://", "https://www."); print}' xss-urls.txt | sort -u > sorted-xss-urls.txt
+            rm -r xss-urls.txt
+            mv sorted-xss-urls.txt xss-urls.txt
+            sleep 5
 
             # Automatically run the xss0r command after reflection step
             ./xss0r --get --urls xss-urls.txt --payloads payloads.txt --shuffle --threads 10 --path || handle_error "Launching xss0r Tool"
@@ -2236,7 +2243,7 @@ run_path_based_xss() {
 
     # Step 9: Running Python script for reflection checks
     show_progress "Running Python script for reflection checks on filtered URLs..."
-    sudo python3 path-reflection.py path-ready.txt --threads 2
+    sudo python3 path-reflection.py path-ready.txt --threads 3
 
     # Step 9.1: Checking if the new file is generated
     if [ -f path-xss-urls.txt ]; then
