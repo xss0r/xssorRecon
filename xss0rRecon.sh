@@ -311,112 +311,83 @@ install_tools() {
    # Step 3: Install Go
 show_progress "Installing Go 1.22.5"
 
-# Remove any existing Go installations
+# Step 1: Remove any existing Go installations
 echo "Removing existing Go installations and cache..."
 sudo apt remove --purge golang -y
 sudo apt autoremove --purge -y
 sudo apt clean
-sudo rm -rf /usr/local/go
-sudo rm -rf /usr/bin/go
-sudo rm -rf /usr/local/bin/go
-sudo rm -rf /usr/local/sbin/go
-sudo rm -rf ~/go
-sudo rm -rf ~/.go
-sudo rm -rf ~/go-workspace
-sudo rm -rf ~/.gvm
-sudo rm -rf /root/go
-sudo rm -rf ~/go/pkg
-sudo rm -rf ~/go/bin
-sudo rm -rf ~/go/src
-sudo rm -rf ~/.cache/go-build
-sudo rm -rf ~/.config/go
-sudo rm -rf ~/.config/gopls
-sudo rm -rf /root/.cache/go-build
-sudo rm -rf /root/.config/go
-sudo rm -rf ~/go ~/.go /root/go
-sudo rm -rf ~/.cache/go-build ~/.config/go ~/.config/gopls
+sudo rm -rf /usr/local/go /usr/bin/go /usr/local/bin/go /root/go ~/go ~/.cache/go-build ~/.config/go ~/.config/gopls
 
 # Remove Go from PATH if previously added
-export PATH=$(echo "$PATH" | sed -e 's|:/usr/local/go/bin||' -e 's|:$HOME/go/bin||' -e 's|:$HOME/.local/bin||')
+export PATH=$(echo "$PATH" | sed -e 's|:/usr/local/go/bin||' -e 's|:$HOME/go/bin||')
 
 # Confirm removal
 echo "Existing Go installations removed."
 
-# Download the required Go version
-python3 -m venv .venv
-source  .venv/bin/activate 
+# Step 2: Download and Install Go
 echo "Downloading Go 1.22.5..."
 sudo apt install golang -y
-sudo snap install go --classic
 wget https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
 
-# Extract the Go tarball and install
 echo "Installing Go 1.22.5..."
 sudo tar -C /usr/local -xzf go1.22.5.linux-amd64.tar.gz
-
-# Set up the environment variables
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:$HOME/go/bin
-export PATH=$PATH:$HOME/go/bin:$HOME/.local/bin
-export GOPATH=$HOME/go
-export PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
-echo 'export PATH=$PATH:/usr/local/go/bin' >> /root/.bashrc
-source /root/.bashrc
-
-
-# Verify the installed version
-go version
 
 # Clean up the downloaded tarball
 sudo rm -r go1.22.5.linux-amd64.tar.gz
 
-# Install dependencies for gvm
-echo "Installing dependencies for gvm..."
-sudo apt install -y curl git mercurial make binutils bison gcc build-essential
+# Step 3: Set up environment variables
+echo "Configuring Go environment..."
+echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile.d/go.sh
+echo 'export GOPATH=$HOME/go' | sudo tee -a /etc/profile.d/go.sh
+echo 'export PATH=$PATH:$GOPATH/bin' | sudo tee -a /etc/profile.d/go.sh
 
-# Install gvm and set Go 1.22.5 as default
-echo "Installing gvm and setting up Go 1.22.5 as default..."
-bash < <(curl -sSL https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
-source ~/.gvm/scripts/gvm
-gvm install go1.22.5
-gvm use go1.22.5 --default
+# Apply environment changes immediately
+source /etc/profile.d/go.sh
 
-# Clean Go build cache
-go clean
+# Make Go available globally for all users
+sudo ln -sf /usr/local/go/bin/go /usr/bin/go
+sudo ln -sf /usr/local/go/bin/gofmt /usr/bin/gofmt
 
-# Hold updates for the Go package
-echo "Holding updates for Go installation..."
-sudo apt-mark hold golang-go
-
-# Sleep to allow environment variable changes to propagate
-sleep 3
-
-# Dynamically set the PATH based on the current user
-if [ "$EUID" -eq 0 ]; then
-    echo "You are the root user."
-    export PATH="$PATH:/root/.local/bin"
+# Step 4: Verify the installation
+echo "Verifying Go installation..."
+if go version; then
+    echo -e "Go 1.22.5 has been successfully installed and configured."
 else
-    # Detect the username of the home user
-    USERNAME=$(whoami)
-    echo "You are the home user: $USERNAME"
-    export PATH="$PATH:/home/$USERNAME/.local/bin"
+    echo -e "Failed to install Go. Please check for errors and retry."
+    exit 1
 fi
 
-# Print the updated PATH for confirmation
-echo "Updated PATH: $PATH"
+# Step 5: Install dependencies for GVM (optional, for managing multiple Go versions)
+echo "Installing dependencies for GVM..."
+sudo apt install -y curl git mercurial make binutils bison gcc build-essential
 
-# Confirm successful installation
-echo -e "${BOLD_BLUE}Go 1.22.5 has been successfully installed, configured, and set as default using gvm.${NC}"
+# Step 6: (Optional) Install and Configure GVM for Version Management
+echo "Installing GVM..."
+if [ ! -d "$HOME/.gvm" ]; then
+    bash < <(curl -sSL https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+    source ~/.gvm/scripts/gvm
+    gvm install go1.22.5
+    gvm use go1.22.5 --default
+else
+    echo "GVM is already installed."
+fi
 
-# Sleep to allow changes to take effect
-sleep 3
+# Final Step: Clean Go cache
+go clean
+echo "Go installation complete!"
 
-# Add Go bin to PATH
-export PATH=$PATH:$(go env GOPATH)/bin
-
-# Print the updated PATH for confirmation
-echo "Updated PATH: $PATH"
-
+# Check if Go is installed and its version
+echo "Checking Go version..."
+if command -v go &> /dev/null; then
+    GO_VERSION=$(go version)
+    if [[ $GO_VERSION == go\ version\ go* ]]; then
+        echo "Go is installed: $GO_VERSION"
+    else
+        echo "Go command exists, but the version could not be determined."
+    fi
+else
+    echo "Go is not installed on this system."
+fi
 # Confirm successful installation
 echo -e "${BOLD_BLUE}Go has been successfully installed and configured.${NC}"
 
