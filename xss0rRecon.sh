@@ -271,8 +271,6 @@ install_tools() {
     sudo pip install alive_progress ratelimit
 
     # Add Go bin to PATH
-    python3 -m venv .venv
-    source  .venv/bin/activate 
     export PATH=$PATH:$(go env GOPATH)/bin
 
     # Dynamically set the PATH based on the current user
@@ -335,6 +333,8 @@ sudo rm -rf ~/.config/go
 sudo rm -rf ~/.config/gopls
 sudo rm -rf /root/.cache/go-build
 sudo rm -rf /root/.config/go
+sudo rm -rf ~/go ~/.go /root/go
+sudo rm -rf ~/.cache/go-build ~/.config/go ~/.config/gopls
 
 # Remove Go from PATH if previously added
 export PATH=$(echo "$PATH" | sed -e 's|:/usr/local/go/bin||' -e 's|:$HOME/go/bin||' -e 's|:$HOME/.local/bin||')
@@ -343,7 +343,11 @@ export PATH=$(echo "$PATH" | sed -e 's|:/usr/local/go/bin||' -e 's|:$HOME/go/bin
 echo "Existing Go installations removed."
 
 # Download the required Go version
+python3 -m venv .venv
+source  .venv/bin/activate 
 echo "Downloading Go 1.22.5..."
+sudo apt install golang -y
+sudo snap install go --classic
 wget https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
 
 # Extract the Go tarball and install
@@ -356,6 +360,9 @@ export PATH=$PATH:$HOME/go/bin
 export PATH=$PATH:$HOME/go/bin:$HOME/.local/bin
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+echo 'export PATH=$PATH:/usr/local/go/bin' >> /root/.bashrc
+source /root/.bashrc
+
 
 # Verify the installed version
 go version
@@ -560,13 +567,10 @@ else
 fi
 
     # Step 7: Install GoSpider
+python3 -m venv .venv
+source  .venv/bin/activate 
 show_progress "Installing GoSpider"
 
-# Ensure Go is installed
-if ! command -v go &> /dev/null; then
-    echo -e "${RED}Go is not installed. Please install Go before proceeding.${NC}"
-    exit 1
-fi
 
 # Attempt to install GoSpider using 'go install'
 echo -e "${BOLD_WHITE}Attempting to install GoSpider using 'go install'...${NC}"
@@ -611,13 +615,10 @@ fi
 sleep 3
 
     # Step 8: Install Hakrawler
+python3 -m venv .venv
+source  .venv/bin/activate 
 show_progress "Installing Hakrawler"
 
-# Ensure Go is installed
-if ! command -v go &> /dev/null; then
-    echo -e "${RED}Go is not installed. Please install Go before proceeding.${NC}"
-    exit 1
-fi
 
 # Attempt to install Hakrawler using 'go install'
 echo -e "${BOLD_WHITE}Attempting to install Hakrawler using 'go install'...${NC}"
@@ -663,13 +664,10 @@ sleep 3
 
 
 # Step 8.1: Install URLFinder
+python3 -m venv .venv
+source  .venv/bin/activate 
 show_progress "Installing URLFinder"
 
-# Ensure Go is installed
-if ! command -v go &> /dev/null; then
-    echo -e "${RED}Go is not installed. Please install Go before proceeding.${NC}"
-    exit 1
-fi
 
 # Attempt to install URLFinder using 'go install'
 echo -e "${BOLD_WHITE}Attempting to install URLFinder using 'go install'...${NC}"
@@ -716,13 +714,10 @@ sleep 3
 
 
     # Step 9: Install Katana
+python3 -m venv .venv
+source  .venv/bin/activate 
 show_progress "Installing Katana"
 
-# Ensure Go is installed
-if ! command -v go &> /dev/null; then
-    echo -e "${RED}Go is not installed. Please install Go before proceeding.${NC}"
-    exit 1
-fi
 
 # Attempt to install Katana using 'go install'
 echo -e "${BOLD_WHITE}Attempting to install Katana using 'go install'...${NC}"
@@ -767,27 +762,11 @@ fi
 sleep 3
 
 
-    # Step 11: Install Gau
-    show_progress "Installing Gau"
-
-    # Detect the current user's home directory
-    if [ "$EUID" -eq 0 ]; then
-        echo "Detected root user."
-        HOME_DIR="/root"
-    else
-        echo "Detected non-root user."
-        USERNAME=$(whoami)
-        HOME_DIR="/home/$USERNAME"
-    fi
-
     #  Install Gau
+python3 -m venv .venv
+source  .venv/bin/activate 
 show_progress "Installing Gau"
 
-# Ensure Go is installed
-if ! command -v go &> /dev/null; then
-    echo -e "${RED}Go is not installed. Please install Go before proceeding.${NC}"
-    exit 1
-fi
 
 # Attempt to install Gau using 'go install'
 echo -e "${BOLD_WHITE}Attempting to install Gau using 'go install'...${NC}"
@@ -819,6 +798,8 @@ else
 fi
 
 # Attempt to install Katana using 'go install'
+python3 -m venv .venv
+source  .venv/bin/activate 
 echo -e "${BOLD_WHITE}Attempting to install Katana using 'go install'...${NC}"
 if go install github.com/projectdiscovery/katana/cmd/katana@latest; then
     echo -e "${BOLD_BLUE}Katana installed successfully via 'go install'.${NC}"
@@ -848,6 +829,8 @@ else
 fi
 
 # Attempt to install Waybackurls using 'go install'
+python3 -m venv .venv
+source  .venv/bin/activate 
 echo -e "${BOLD_WHITE}Attempting to install Waybackurls using 'go install'...${NC}"
 if go install github.com/tomnomnom/waybackurls@latest; then
     echo -e "${BOLD_BLUE}Waybackurls installed successfully via 'go install'.${NC}"
@@ -881,19 +864,6 @@ fi
 if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
     export PATH="$PATH:/usr/local/bin"
 fi
-
-# Create a .gau.toml configuration file in the user's home directory
-echo -e "${BOLD_WHITE}Configuring Gau...${NC}"
-cat <<EOF > "$HOME/.gau.toml"
-[gau]
-wayback = true
-commoncrawl = true
-otx = false
-EOF
-
-# Set appropriate permissions for the .gau.toml file
-sudo chown "$USER":"$USER" "$HOME/.gau.toml"
-sudo chmod 644 "$HOME/.gau.toml"
 
 # Confirm installation and configuration
 if command -v gau &> /dev/null; then
