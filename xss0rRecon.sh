@@ -468,7 +468,9 @@ if [ ! -d "Subdominator" ]; then
 
     # Try installing directly with pip
     python3 -m venv .venv
-    source  .venv/bin/activate 
+    source  .venv/bin/activate
+    sudo pip uninstall uvloop -y && sudo pip3 uninstall uvloop -y && sudo pipx uninstall uvloop || true && sudo pip install uvloop --break-system-packages
+    sudo pip install --upgrade aiodns pycares --break-system-packages
     sudo pip install git+https://github.com/RevoltSecurities/Subdominator --break-system-packages --root-user-action=ignore
     sudo pip install git+https://github.com/RevoltSecurities/Subdominator --no-deps httpx==0.25.2
 
