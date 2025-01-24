@@ -215,10 +215,11 @@ install_tools() {
     sudo apt install -y pkg-config
     sudo apt install -y libssl-dev libffi-dev
     sudo pip install colorama --break-system-packages
-    pip install aiodns --break-system-packages
-    pip install aiofiles --break-system-packages
-    pip install -U bs4 --break-system-packages
-    pip install -U lxml --break-system-packages
+    sudo pip install aiodns --break-system-packages
+    sudo pip install aiofiles --break-system-packages
+    sudo pip install -U bs4 --break-system-packages
+    sudo pip install -U lxml --break-system-packages
+    sudo pip install --upgrade cython
     sudo pip install aiojarm --break-system-packages
     sudo pip install playwright --break-system-packages
     sudo pip install subprober --break-system-packages --no-deps anyio==4.6.2
