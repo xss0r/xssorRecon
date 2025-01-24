@@ -213,6 +213,7 @@ install_tools() {
     sudo apt install -y python3.12
     sudo apt install -y build-essential libssl-dev zlib1g-dev libncurses5-dev libnss3-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev make
     sudo apt install -y pkg-config
+    sudo apt install -y libssl-dev libffi-dev
     sudo pip install colorama --break-system-packages
     pip install aiodns --break-system-packages
     pip install aiofiles --break-system-packages
