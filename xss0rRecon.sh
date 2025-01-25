@@ -1173,6 +1173,8 @@ subprober -f "unique-${domain_name}-domains.txt" -sc -ar -o "subprober-${domain_
 sleep 5
 
 # Step 7.1: Create subs-subs folder and set permissions
+  python3 -m venv .venv
+  source  .venv/bin/activate 
 output_folder="subs-subs"
 if [[ ! -d "$output_folder" ]]; then
     echo "Creating output folder $output_folder..."
@@ -1182,6 +1184,8 @@ sudo chmod 777 "$output_folder"
 
 # Step 7.2: Normalize domains from subprober output and save to normalized-cleaned.txt in subs-subs
 show_progress "Normalizing domains to remove prefixes, status codes, and special characters"
+python3 -m venv .venv
+source  .venv/bin/activate 
 input_file="subprober-${domain_name}-domains.txt"
 normalized_file="$output_folder/normalized-cleaned.txt"
 temp_file=$(mktemp)
@@ -1208,6 +1212,8 @@ fi
 current_folder=$(pwd)
 
 # Save the normalized cleaned file in subs-subs folder
+python3 -m venv .venv
+source  .venv/bin/activate 
 sudo mv "$temp_file" "$normalized_file" || { echo "Error: Failed to save the normalized file. Ensure sudo privileges are available."; exit 1; }
 sudo chown "$(whoami):$(whoami)" "$normalized_file"
 sudo chmod +x "$normalized_file"
