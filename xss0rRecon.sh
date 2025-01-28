@@ -1841,12 +1841,54 @@ if [ -f "reflection.py" ]; then
             echo -e "${BOLD_WHITE}Initial Total Merged URLs in the beginning : ${RED}${total_merged_urls}${NC}"
             echo -e "${BOLD_WHITE}Filtered Final URLs for XSS Testing: ${RED}${total_urls}${NC}"
 
-            #Sorting URLs for xss0r:
-            echo -e "${BOLD_BLUE}Sorting valid format URLs for xss0r...${NC}"
-            awk '{sub("http://", "http://www."); sub("https://", "https://www."); print}' xss-urls.txt | sort -u > sorted-xss-urls.txt
-            rm -r xss-urls.txt
-            mv sorted-xss-urls.txt xss-urls.txt
-            sleep 5
+            # Sorting URLs for xss0r
+echo -e "${BOLD_BLUE}Sorting valid format URLs for xss0r...${NC}"
+
+# Add www to http/https URLs and sort uniquely
+awk '{sub("http://", "http://www."); sub("https://", "https://www."); print}' xss-urls.txt | sort -u > sorted-xss-urls.txt
+
+# Validate the first 10 URLs with www
+echo -e "${BOLD_BLUE}Validating the first 10 URLs with 'http://www.'...${NC}"
+counter=0
+invalid_found=false
+
+while IFS= read -r url && [ "$counter" -lt 10 ]; do
+    # Check if the URL is reachable
+    status=$(curl -sL -o /dev/null -w "%{http_code}" "$url")
+    
+    if [[ "$status" -eq 000 ]]; then
+        echo -e "Invalid URL detected: $url (Connection failed)"
+        invalid_found=true
+        break
+    else
+        # Check the page title or body for specific errors
+        response=$(curl -sL "$url")
+        title=$(echo "$response" | grep -oP '(?<=<title>).*?(?=</title>)')
+        
+        if echo "$response" | grep -q "Hmm. We’re having trouble finding that site." || [[ "$title" == "Server Not Found" ]]; then
+            echo -e "Invalid URL detected: $url (Error page found)"
+            invalid_found=true
+            break
+        fi
+    fi
+
+    counter=$((counter + 1))
+done < sorted-xss-urls.txt
+
+# Normalize URLs if invalid URL found
+if $invalid_found; then
+    echo -e "${BOLD_BLUE}Adjusting all URLs to remove 'www.'...${NC}"
+    awk '{sub("http://www.", "http://"); sub("https://www.", "https://"); print}' sorted-xss-urls.txt > adjusted-xss-urls.txt
+    mv adjusted-xss-urls.txt xss-urls.txt
+else
+    echo -e "${BOLD_BLUE}No invalid URLs detected. Keeping 'www.' format.${NC}"
+    mv sorted-xss-urls.txt xss-urls.txt
+fi
+
+# Cleanup
+rm -f sorted-xss-urls.txt
+echo -e "${BOLD_BLUE}URL sorting completed!${NC}"
+
 
             # Automatically run the xss0r command after reflection step
             ./xss0r --get --urls xss-urls.txt --payloads payloads.txt --shuffle --threads 10 --path || handle_error "Launching xss0r Tool"
