@@ -2073,6 +2073,13 @@ run_path_based_xss() {
 
     echo -e "${CYAN}Intermediate files deleted. Final output is $output_file.${NC}"
 
+    # Start a new process group
+    set -m
+
+# Safely kill processes related to xss0r
+pkill -f '^\.\/xss0r(\s|$)' || pkill -f 'xss0rdriver' || pkill -f 'google-chrome' || echo -e "${YELLOW}No xss0r-related tasks were running.${NC}"
+echo -e "Cleaned Tasks Before Run!${NC}"
+
     # Step 12: Launch the xss0r tool for path-based XSS testing
     echo -e "${BOLD_BLUE}Launching the xss0r tool on path-xss-urls.txt...${NC}"
     ./xss0r --get --urls path-xss-urls.txt --payloads payloads.txt --shuffle --threads 10 --path
