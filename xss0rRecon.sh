@@ -1079,7 +1079,7 @@ run_step_3() {
                 mv "subs-filtered.txt" "${domain_name}-domains.txt"
                 echo -e "${RED}Removed $removed_count duplicate domains.${NC}"
 
-                # Normalize to `http://` and remove `www.`
+                # Step xx: Normalize to `http://` and remove `www.`
                 awk '{sub(/^https?:\/\//, "http://", $0); sub(/^http:\/\/www\./, "http://", $0); domain = $0; if (!seen[domain]++) print domain}' \
                 "${domain_name}-domains.txt" > "final-${domain_name}-domains.txt" || handle_error "Final filtering"
                 rm -r "${domain_name}-domains.txt"
@@ -1172,222 +1172,15 @@ show_progress "Filtering ALIVE domain names"
 subprober -f "unique-${domain_name}-domains.txt" -sc -ar -o "subprober-${domain_name}-domains.txt" -nc -c 20 || handle_error "subprober"
 sleep 5
 
-# Step 7.1: Create subs-subs folder and set permissions
-  python3 -m venv .venv
-  source .venv/bin/activate 
-output_folder="subs-subs"
-if [[ ! -d "$output_folder" ]]; then
-    echo "Creating output folder $output_folder..."
-    sudo mkdir "$output_folder"
-fi
-sudo chmod 777 "$output_folder"
-
-# Step 7.2: Normalize domains from subprober output and save to normalized-cleaned.txt in subs-subs
-show_progress "Normalizing domains to remove prefixes, status codes, and special characters"
-python3 -m venv .venv
-source .venv/bin/activate 
-input_file="subprober-${domain_name}-domains.txt"
-normalized_file="$output_folder/normalized-cleaned.txt"
-temp_file=$(mktemp)
-
-while IFS= read -r line || [[ -n "$line" ]]; do
-    # Remove http:// and https:// prefixes
-    cleaned_line=$(echo "$line" | sed -E 's/^https?:\/\///')
-    # Remove status codes enclosed in brackets (e.g., [200])
-    cleaned_line=$(echo "$cleaned_line" | sed -E 's/\[[0-9]{3}\]//g')
-    # Trim whitespace and remove special characters
-    cleaned_line=$(echo "$cleaned_line" | xargs | grep -oP '^[a-zA-Z0-9.-]+$')
-    # Append cleaned domain to the new file if not empty
-    if [[ -n "$cleaned_line" ]]; then
-        echo "$cleaned_line" >> "$temp_file"
-    fi
-done < "$input_file"
-
-if [[ ! -s "$temp_file" ]]; then
-    echo "Error: No valid domains found after normalization."
-    exit 1
-fi
-
-# Determine the current working directory
-current_folder=$(pwd)
-
-# Save the normalized cleaned file in subs-subs folder
-python3 -m venv .venv
-source .venv/bin/activate 
-sudo mv "$temp_file" "$normalized_file" || { echo "Error: Failed to save the normalized file. Ensure sudo privileges are available."; exit 1; }
-sudo chown "$(whoami):$(whoami)" "$normalized_file"
-sudo chmod +x "$normalized_file"
-echo "File '$normalized_file' has been created, ownership updated, and permissions set successfully."
-
-# Step 7.3: Remove duplicates directly from normalized-cleaned.txt
-show_progress "Removing duplicate domains"
-initial_count=$(wc -l < "$normalized_file")
-
-# Use a temporary file for deduplication
-temp_file=$(mktemp)
-awk '{if (!seen[$0]++) print}' "$normalized_file" > "$temp_file" || handle_error "Removing duplicates"
-
-# Overwrite the original file with the deduplicated content
-sudo mv "$temp_file" "$normalized_file" || { echo "Error: Failed to update the normalized file. Ensure sudo privileges are available."; exit 1; }
-sudo chown "$(whoami):$(whoami)" "$normalized_file"
-sudo chmod +x "$normalized_file"
-
-final_count=$(wc -l < "$normalized_file")
-removed_count=$((initial_count - final_count))
-echo -e "${RED}Removed $removed_count duplicate domains.${NC}"
-
-# Show the total number of domains in the current normalized file
-echo -e "${BOLD_BLUE}Current normalized file contains: ${final_count} domains.${NC}"
-
-# Step 7.4: Copy normalized file to the main folder and rename it to brut-${domain_name}-domains.txt
-brut_file="brut-${domain_name}-domains.txt"
-sudo cp "$normalized_file" "$brut_file" || { echo "Error: Failed to copy normalized file to the main folder. Ensure sudo privileges are available."; exit 1; }
-sudo chown "$(whoami):$(whoami)" "$brut_file"
-sudo chmod +x "$brut_file"
-
-# Update ownership and permissions for the current folder
-sudo chown -R "$(whoami):$(whoami)" "$current_folder"
-sudo chmod -R +x "$current_folder"
-echo "Ownership and execute permissions have been updated for the folder: $current_folder"
-
-
-# Step 7.5: Add BRUT. prefix to the domains
-show_progress "Performing enumeration subdomains of subdomains"
-temp_brut_file=$(mktemp)
-sudo chown "$(whoami):$(whoami)" "$temp_brut_file" || { echo "Error: Failed to set ownership for temporary BRUT file."; exit 1; }
-sudo chmod 600 "$temp_brut_file" || { echo "Error: Failed to set permissions for temporary BRUT file."; exit 1; }
-
-while IFS= read -r domain || [[ -n "$domain" ]]; do
-    echo "BRUT.$domain" >> "$temp_brut_file" || { echo "Error: Failed to write to temporary BRUT file."; exit 1; }
-done < "$brut_file"
-
-if [[ ! -s "$temp_brut_file" ]]; then
-    echo "Error: No domains to process in '$brut_file'."
-    exit 1
-fi
-
-# Overwrite the brut file with BRUT-prefixed domains
-sudo mv "$temp_brut_file" "$brut_file" || { echo "Error: Failed to overwrite '$brut_file' with BRUT-prefixed domains. Ensure sudo privileges are available."; exit 1; }
-sudo chown "$(whoami):$(whoami)" "$brut_file"
-sudo chmod +x "$brut_file"
-echo "File '$brut_file' created successfully with BRUT. prefix added to all valid domains."
-
-
-# Step 7.7: Run dnsbruter on the BRUT-prefixed domains
-wordlist_file="subs-dnsbruter-small.txt"
-
-if [[ ! -f "$wordlist_file" ]]; then
-    echo "Error: Wordlist file '$wordlist_file' not found."
-    exit 1
-fi
-
-processed_count=0
-total_domains=$(wc -l < "$brut_file")
-echo "Total domains to process: $total_domains"
-
-# Dynamically determine the default folder using pwd
-default_folder=$(pwd)
-brut_log="$default_folder/BRUT.log"
-> "$brut_log"  # Clear the BRUT.log file if it exists
-
-while IFS= read -r domain || [[ -n "$domain" ]]; do
-    domain=$(echo "$domain" | xargs)
-    if [[ -n "$domain" ]]; then
-        processed_count=$((processed_count + 1))
-        echo "Processing $processed_count/$total_domains: $domain"
-        output_file="$output_folder/output-${domain//BRUT/}.txt"
-        python3 -m venv .venv
-        source .venv/bin/activate 
-        dnsbruter -d "$domain" -w "$wordlist_file" -c 150 -wt 80 -rt 500 -wd -ws wild.txt -o "$output_file" -ws "$output_folder/wild-${domain//BRUT/}.txt"
-        if [[ $? -ne 0 ]]; then
-            echo "Error occurred while running dnsbruter for $domain."
-        else
-            # Count and log new domains discovered by dnsbruter
-            new_domains_count=$(wc -l < "$output_file")
-            echo "BRUT for $domain discovered $new_domains_count new domains."
-            echo "[$domain] Discovered: $new_domains_count new domains" >> "$brut_log"
-            
-            echo "Completed dnsbruter for $domain. Output saved to $output_file"
-        fi
-    fi
-done < "$brut_file"
-
-# Step 7.8: Merge all files in subs-subs folder into subs-subs.txt (including all .txt files)
-cd "$output_folder" || { echo "Failed to enter folder $output_folder"; exit 1; }
-cat *.txt > "subs-subs.txt"
-
-# Step 7.9: Remove duplicates from subs-subs.txt
-show_progress "Removing duplicate domains in subs-subs.txt"
-initial_count=$(wc -l < "subs-subs.txt")
-awk '{if (!seen[$0]++) print}' "subs-subs.txt" > "subs-filtered.txt" || handle_error "Removing duplicates"
-final_count_subs=$(wc -l < "subs-filtered.txt")
-removed_count=$((initial_count - final_count_subs))
-echo -e "${RED}Removed $removed_count duplicate domains.${NC}"
-
-# Replace subs-subs.txt with the filtered version
-sudo rm -r "subs-subs.txt"
-sudo mv "subs-filtered.txt" "subs-subs.txt"
-
-# Compare new domains in subs-subs.txt with the normalized file
-new_domains=$((final_count_subs - final_count))
-echo -e "${BOLD_BLUE}Current subs-subs.txt contains: ${final_count_subs} domains.${NC}"
-echo -e "${CYAN}Number of new SUB-SUB domains added since normalization: ${new_domains}${NC}"
-
-# Step 7.10: Move the final subs-subs.txt file to the default folder
-cd ..
-sudo mv "$output_folder/subs-subs.txt" "$default_folder/subs-subs.txt"
-echo "Final file 'subs-subs.txt' moved to the default folder."
-
-# Step 7.11: Log message confirming BRUT.log saved to the default folder
-if [[ -f "$brut_log" ]]; then
-    echo "BRUT.log has been created and saved to the default folder: $default_folder"
-fi
-
-# Count and display the total number of subdomains found
-total_subdomains=$(wc -l < "subs-subs.txt")
-echo -e "${BOLD_BLUE}Total subdomains found: ${total_subdomains}${NC}"
-
-# Step 7.11: Remove old subprober domains file
-show_progress "Removing old subprober domains file"
-rm -r "subprober-${domain_name}-domains.txt" || handle_error "Removing old subprober domains file"
-sleep 3
-
-
-# Step 2xSubprober: Filtering ALIVE domain names
-show_progress "Filtering ALIVE domain names"
-
-# Optimize SubProber execution with reduced concurrency and thread count
-python3 -m venv .venv
-source .venv/bin/activate 
-subprober -f subs-subs.txt -sc -ar -o "subprober-${domain_name}-domains.txt" -nc -c 20 || handle_error "subprober"
-
-# Sleep to allow the system to stabilize after intensive processing
-sleep 5
-
-
-# Verify if the output file was created successfully
-if [[ -f "subprober-${domain_name}-domains.txt" ]]; then
-    echo "ALIVE domains successfully filtered and saved to subprober-${domain_name}-domains.txt"
-else
-    echo "Error: Output file 'subprober-${domain_name}-domains.txt' not created. Please check the logs for details."
-    exit 1
-fi
-
-# Step 2y: Replacing subs-subs.txt with filtered subprober domains
-sudo rm -r subs-subs.txt
-sudo mv "subprober-${domain_name}-domains.txt" subs-subs.txt
-echo "Replaced 'subs-subs.txt' with filtered subprober domains."
-sleep 5
 
 # Step 2y1: Filtering valid domain names
 show_progress "Filtering valid domain names"
-grep -oP 'http[^\s]*' "subs-subs.txt" > output-domains.txt || handle_error "grep valid domains"
+grep -oP 'http[^\s]*' "subprober-${domain_name}-domains.txt" > output-domains.txt || handle_error "grep valid domains"
 sleep 3
 
-# Step 2y2: Replacing subs-subs.txt with valid domains
-sudo rm -r subs-subs.txt
+# Step 2y2: Replacing with valid domains
 sudo mv output-domains.txt subs-subs.txt
-echo "Replaced 'subs-subs.txt' with valid domain names."
+echo "Replaced 'old' with valid domain names."
 sleep 3
 
 
@@ -1420,11 +1213,7 @@ echo -e "${BOLD_RED}Enumeration and filtering process completed successfully. Fi
 
 # Step 10.1: Deleting all unwanted files
 show_progress "Deleting all unwanted files"
-sudo rm -r "brut-${domain_name}-domains.txt" "unique-${domain_name}-domains.txt" subs-subs || echo "Some files could not be deleted. Please check permissions."
-echo "Deleted the following files:"
-echo "- brut-${domain_name}-domains.txt"
-echo "- unique-${domain_name}-domains.txt"
-echo "- subs-subs folder"
+sudo rm -r "unique-${domain_name}-domains.txt" || echo "Some files could not be deleted. Please check permissions."
 sleep 3
 
 
@@ -2070,6 +1859,7 @@ if [ -f "reflection.py" ]; then
 else
     echo -e "${RED}reflection.py not found in the current directory. Skipping page reflection step.${NC}"
 fi
+
 }
 
 # Function to run step 8 (Launching xss0r Tool)
@@ -2242,6 +2032,16 @@ run_path_based_xss() {
         echo -e "${BOLD_GREEN}xss0r tool executed successfully! Check the output for results.${NC}"
     fi
 }
+
+# Function to handle script interruption
+trap_interrupt() {
+    echo -e "\n${RED}Script interrupted. Exiting.${NC}"
+    exit 1
+}
+
+# Trap SIGINT (Ctrl+C)
+trap trap_interrupt SIGINT
+
 
 # Main script logic
 
