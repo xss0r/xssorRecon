@@ -1473,7 +1473,7 @@ run_step_5() {
     show_progress "Filtering ALIVE URLS"
     python3 -m venv .venv
     source .venv/bin/activate 
-    subprober -f "${domain_name}-links.txt" -sc -ar -o "${domain_name}-links.txt1337" -nc -mc 200,201,202,204,301,302,304,307,308,403,500,504,401,407 -c 20 || handle_error "subprober"
+    subprober -f "${domain_name}-links.txt" -sc -ar -o "${domain_name}-links-alive.txt" -nc -mc 200,201,202,204,301,302,304,307,308,403,500,504,401,407 -c 20 || handle_error "subprober"
     sleep 5
 
     # Step 25: Removing old file
@@ -1483,13 +1483,13 @@ run_step_5() {
 
     # Step 26: Filtering valid URLS
     show_progress "Filtering valid URLS"
-    grep -oP 'http[^\s]*' "${domain_name}-links.txt1337" > ${domain_name}-links.txt1338 || handle_error "grep valid urls"
+    grep -oP 'http[^\s]*' "${domain_name}-links-alive.txt" > ${domain_name}-links-valid.txt || handle_error "grep valid urls"
     sleep 5
 
     # Step 27: Removing intermediate file and renaming final output
     show_progress "Final cleanup and renaming"
-    rm -r ${domain_name}-links.txt1337
-    mv ${domain_name}-links.txt1338 ${domain_name}-links.txt
+    rm -r ${domain_name}-links-alive.txt
+    mv ${domain_name}-links-valid.txt ${domain_name}-links.txt
     sleep 3
 
     echo -e "${BOLD_BLUE}Filtering process completed successfully. Final output saved as ${domain_name}-links.txt.${NC}"
@@ -1888,6 +1888,15 @@ fi
 # Cleanup
 rm -f sorted-xss-urls.txt
 echo -e "${BOLD_BLUE}URL sorting completed!${NC}"
+
+
+# Start a new process group
+set -m
+
+# Safely kill processes related to xss0r
+pkill -f '^\.\/xss0r(\s|$)' || pkill -f 'xss0rdriver' || pkill -f 'google-chrome' || echo -e "${YELLOW}No xss0r-related tasks were running.${NC}"
+echo -e "Cleaned Tasks Before Run!${NC}"
+
 
 
             # Automatically run the xss0r command after reflection step
