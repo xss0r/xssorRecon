@@ -203,7 +203,7 @@ install_tools() {
     sudo apt update --fix-missing
     sudo apt install python3.12-venv
     python3 -m venv .venv
-    source  .venv/bin/activate 
+    source .venv/bin/activate 
     sudo apt install -y python3-pip
     sudo apt upgrade python3
     sudo apt install pip
@@ -425,7 +425,7 @@ if ! command -v dnsbruter &> /dev/null; then
 
     # Try installing directly with pip
     python3 -m venv .venv
-    source  .venv/bin/activate 
+    source .venv/bin/activate 
     sudo pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter
     pipx install git+https://github.com/RevoltSecurities/Dnsbruter.git
 
@@ -470,7 +470,7 @@ if [ ! -d "Subdominator" ]; then
 
     # Try installing directly with pip
     python3 -m venv .venv
-    source  .venv/bin/activate
+    source .venv/bin/activate
     sudo pip uninstall uvloop -y && sudo pip3 uninstall uvloop -y && sudo pipx uninstall uvloop || true && sudo pip install uvloop --break-system-packages
     sudo pip install --upgrade aiodns pycares --break-system-packages
     sudo pip install git+https://github.com/RevoltSecurities/Subdominator --break-system-packages --root-user-action=ignore
@@ -509,7 +509,7 @@ if [ ! -d "SubProber" ]; then
 
     # Try installing directly with pip
     python3 -m venv .venv
-    source  .venv/bin/activate 
+    source .venv/bin/activate 
     sudo pip install git+https://github.com/RevoltSecurities/Subprober --break-system-packages --root-user-action=ignore
     pipx install git+https://github.com/RevoltSecurities/Subprober.git
 
@@ -543,7 +543,7 @@ fi
 
     # Step 7: Install GoSpider
 python3 -m venv .venv
-source  .venv/bin/activate 
+source .venv/bin/activate 
 show_progress "Installing GoSpider"
 
 
@@ -591,7 +591,7 @@ sleep 3
 
     # Step 8: Install Hakrawler
 python3 -m venv .venv
-source  .venv/bin/activate 
+source .venv/bin/activate 
 show_progress "Installing Hakrawler"
 
 
@@ -640,7 +640,7 @@ sleep 3
 
 # Step 8.1: Install URLFinder
 python3 -m venv .venv
-source  .venv/bin/activate 
+source .venv/bin/activate 
 show_progress "Installing URLFinder"
 
 
@@ -690,7 +690,7 @@ sleep 3
 
     # Step 9: Install Katana
 python3 -m venv .venv
-source  .venv/bin/activate 
+source .venv/bin/activate 
 show_progress "Installing Katana"
 
 
@@ -739,7 +739,7 @@ sleep 3
 
     #  Install Gau
 python3 -m venv .venv
-source  .venv/bin/activate 
+source .venv/bin/activate 
 show_progress "Installing Gau"
 
 
@@ -774,7 +774,7 @@ fi
 
 # Attempt to install Katana using 'go install'
 python3 -m venv .venv
-source  .venv/bin/activate 
+source .venv/bin/activate 
 echo -e "${BOLD_WHITE}Attempting to install Katana using 'go install'...${NC}"
 if go install github.com/projectdiscovery/katana/cmd/katana@latest; then
     echo -e "${BOLD_BLUE}Katana installed successfully via 'go install'.${NC}"
@@ -805,7 +805,7 @@ fi
 
 # Attempt to install Waybackurls using 'go install'
 python3 -m venv .venv
-source  .venv/bin/activate 
+source .venv/bin/activate 
 echo -e "${BOLD_WHITE}Attempting to install Waybackurls using 'go install'...${NC}"
 if go install github.com/tomnomnom/waybackurls@latest; then
     echo -e "${BOLD_BLUE}Waybackurls installed successfully via 'go install'.${NC}"
@@ -1056,7 +1056,7 @@ run_step_3() {
                 # Step xx: Filtering ALIVE DOMAINS
                 show_progress "Filtering ALIVE DOMAINS"
                 python3 -m venv .venv
-                source  .venv/bin/activate 
+                source .venv/bin/activate 
                 subprober -f "${domain_name}-domains.txt" -sc -ar -o "${domain_name}-alive" -nc -c 20 || handle_error "subprober"
                 sleep 5
                 rm -r "${domain_name}-domains.txt"
@@ -1102,14 +1102,14 @@ run_step_3() {
         # Step 1: Passive FUZZ domains with wordlist
         show_progress "Passive FUZZ domains with wordlist"
         python3 -m venv .venv
-        source  .venv/bin/activate 
+        source .venv/bin/activate 
         dnsbruter -d "$domain_name" -w subs-dnsbruter-small.txt -c 150 -wt 80 -rt 500 -wd -ws wild.txt -o output-dnsbruter.txt || handle_error "dnsbruter"
         sleep 5
 
         # Step 2: Active brute crawling domains
         show_progress "Active brute crawling domains"
         python3 -m venv .venv
-        source  .venv/bin/activate 
+        source .venv/bin/activate 
         subdominator -d "$domain_name" -o output-subdominator.txt || handle_error "subdominator"
         sleep 5
 
@@ -1174,7 +1174,7 @@ sleep 5
 
 # Step 7.1: Create subs-subs folder and set permissions
   python3 -m venv .venv
-  source  .venv/bin/activate 
+  source .venv/bin/activate 
 output_folder="subs-subs"
 if [[ ! -d "$output_folder" ]]; then
     echo "Creating output folder $output_folder..."
@@ -1185,7 +1185,7 @@ sudo chmod 777 "$output_folder"
 # Step 7.2: Normalize domains from subprober output and save to normalized-cleaned.txt in subs-subs
 show_progress "Normalizing domains to remove prefixes, status codes, and special characters"
 python3 -m venv .venv
-source  .venv/bin/activate 
+source .venv/bin/activate 
 input_file="subprober-${domain_name}-domains.txt"
 normalized_file="$output_folder/normalized-cleaned.txt"
 temp_file=$(mktemp)
@@ -1213,7 +1213,7 @@ current_folder=$(pwd)
 
 # Save the normalized cleaned file in subs-subs folder
 python3 -m venv .venv
-source  .venv/bin/activate 
+source .venv/bin/activate 
 sudo mv "$temp_file" "$normalized_file" || { echo "Error: Failed to save the normalized file. Ensure sudo privileges are available."; exit 1; }
 sudo chown "$(whoami):$(whoami)" "$normalized_file"
 sudo chmod +x "$normalized_file"
@@ -1297,7 +1297,7 @@ while IFS= read -r domain || [[ -n "$domain" ]]; do
         echo "Processing $processed_count/$total_domains: $domain"
         output_file="$output_folder/output-${domain//BRUT/}.txt"
         python3 -m venv .venv
-        source  .venv/bin/activate 
+        source .venv/bin/activate 
         dnsbruter -d "$domain" -w "$wordlist_file" -c 150 -wt 80 -rt 500 -wd -ws wild.txt -o "$output_file" -ws "$output_folder/wild-${domain//BRUT/}.txt"
         if [[ $? -ne 0 ]]; then
             echo "Error occurred while running dnsbruter for $domain."
@@ -1358,7 +1358,7 @@ show_progress "Filtering ALIVE domain names"
 
 # Optimize SubProber execution with reduced concurrency and thread count
 python3 -m venv .venv
-source  .venv/bin/activate 
+source .venv/bin/activate 
 subprober -f subs-subs.txt -sc -ar -o "subprober-${domain_name}-domains.txt" -nc -c 20 || handle_error "subprober"
 
 # Sleep to allow the system to stabilize after intensive processing
@@ -1683,7 +1683,7 @@ run_step_5() {
     # Step 24: Filtering ALIVE URLS
     show_progress "Filtering ALIVE URLS"
     python3 -m venv .venv
-    source  .venv/bin/activate 
+    source .venv/bin/activate 
     subprober -f "${domain_name}-links.txt" -sc -ar -o "${domain_name}-links.txt1337" -nc -mc 200,201,202,204,301,302,304,307,308,403,500,504,401,407 -c 20 || handle_error "subprober"
     sleep 5
 
