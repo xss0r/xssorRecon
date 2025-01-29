@@ -427,13 +427,14 @@ if ! command -v dnsbruter &> /dev/null; then
     source .venv/bin/activate 
     sudo pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter
     pipx install git+https://github.com/RevoltSecurities/Dnsbruter.git
-     python3 -m venv .venv
-    source .venv/bin/activate
-    python3 -m pip install --upgrade dnsbruter
-    python3 -m pip install --break-system-packages --upgrade dnsbruter
-     dnsbruter -up
+
 
     # Check if the installation was successful
+        python3 -m venv .venv
+        source .venv/bin/activate
+        python3 -m pip install --upgrade dnsbruter
+        python3 -m pip install --break-system-packages --upgrade dnsbruter
+        dnsbruter -up
     if ! pip show dnsbruter &> /dev/null; then
         echo "Direct installation failed. Attempting installation via cloning the repository."
 
@@ -921,6 +922,7 @@ sleep 3
 echo -e "${BOLD_WHITE}Checking installed tools...${NC}"
 
 echo -e "${BOLD_WHITE}1. Dnsbruter:${NC}"
+python3 -m pip install --break-system-packages --upgrade dnsbruter
 dnsbruter -h > /dev/null 2>&1 && echo "Dnsbruter is installed" || echo "Dnsbruter is not installed correctly"
 
 echo -e "${BOLD_WHITE}2. Subdominator:${NC}"
