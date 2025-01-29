@@ -922,7 +922,6 @@ sleep 3
 echo -e "${BOLD_WHITE}Checking installed tools...${NC}"
 
 echo -e "${BOLD_WHITE}1. Dnsbruter:${NC}"
-python3 -m pip install --break-system-packages --upgrade dnsbruter
 dnsbruter -h > /dev/null 2>&1 && echo "Dnsbruter is installed" || echo "Dnsbruter is not installed correctly"
 
 echo -e "${BOLD_WHITE}2. Subdominator:${NC}"
