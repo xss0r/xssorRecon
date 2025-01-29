@@ -427,6 +427,11 @@ if ! command -v dnsbruter &> /dev/null; then
     source .venv/bin/activate 
     sudo pip install --no-deps --force-reinstall --break-system-packages git+https://github.com/RevoltSecurities/Dnsbruter
     pipx install git+https://github.com/RevoltSecurities/Dnsbruter.git
+     python3 -m venv .venv
+    source .venv/bin/activate
+    python3 -m pip install --upgrade dnsbruter
+    python3 -m pip install --break-system-packages --upgrade dnsbruter
+     dnsbruter -up
 
     # Check if the installation was successful
     if ! pip show dnsbruter &> /dev/null; then
@@ -438,6 +443,8 @@ if ! command -v dnsbruter &> /dev/null; then
 
         # Install from the local cloned repository
         sudo pip install . --break-system-packages --root-user-action=ignore
+        python3 -m venv .venv
+        source .venv/bin/activate
         python3 -m pip install --upgrade dnsbruter
         python3 -m pip install --break-system-packages --upgrade dnsbruter
         dnsbruter -up
