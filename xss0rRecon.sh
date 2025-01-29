@@ -438,6 +438,8 @@ if ! command -v dnsbruter &> /dev/null; then
 
         # Install from the local cloned repository
         sudo pip install . --break-system-packages --root-user-action=ignore
+        python3 -m pip install --upgrade dnsbruter
+        python3 -m pip install --break-system-packages --upgrade dnsbruter
         dnsbruter -up
 
         # Clean up by removing the cloned directory after installation
