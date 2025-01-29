@@ -199,6 +199,7 @@ install_tools() {
     echo -e "${BOLD_WHITE}You selected: Install all tools${NC}"
 
     show_progress "Installing dependencies"
+    sudo apt-mark hold google-chrome-stable
     sudo apt update && sudo apt install needrestart -y && sudo apt upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" && sudo apt dist-upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" && sudo dpkg --configure -a && sudo apt -f install -y && sudo needrestart -q -n    sudo apt update --fix-missing
     sudo apt install python3.12-venv
     python3 -m venv .venv
@@ -227,7 +228,6 @@ install_tools() {
     sudo pip install -U lxml --break-system-packages
     sudo apt --fix-broken install
     sudo apt install -y python3 python3-pip python3-venv python3-setuptools git wget curl
-    sudo apt-mark hold google-chrome-stable
     sudo apt-get install -y rsync zip unzip p7zip-full golang-go terminator pipx tmux
 
     # Remove conflicting package if it exists
