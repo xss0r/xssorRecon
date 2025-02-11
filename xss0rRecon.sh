@@ -202,6 +202,30 @@ install_tools() {
     sudo apt-mark hold google-chrome-stable
     sudo apt install git
     sudo apt update && sudo apt install needrestart -y && sudo apt upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" && sudo apt dist-upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" && sudo dpkg --configure -a && sudo apt -f install -y && sudo needrestart -q -n    sudo apt update --fix-missing
+    # Check if the OS is Ubuntu
+if grep -qi "ubuntu" /etc/*release; then
+    echo "Ubuntu detected! Running installation commands..."
+    
+    # Update and upgrade packages
+    apt update && apt upgrade -y
+
+    # Install required dependencies
+    apt install software-properties-common -y
+
+    # Add the deadsnakes PPA
+    add-apt-repository ppa:deadsnakes/ppa -y
+
+    # Update package list again
+    apt update
+
+    # Install Python 3.12
+    apt install python3.12 -y
+
+    # Verify installation
+    python3.12 --version
+else
+    echo "This is not an Ubuntu system. Skipping installation."
+fi
     sudo apt install python3.12-venv
     python3 -m venv .venv
     source .venv/bin/activate 
