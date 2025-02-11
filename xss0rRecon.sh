@@ -222,6 +222,9 @@ if grep -qi "ubuntu" /etc/*release; then
     apt install python3.12 -y
 
     # Verify installation
+    sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+    sudo update-alternatives --config python3
+    sudo ln -sf /usr/bin/python3 /usr/bin/python
     python3.12 --version
 else
     echo "This is not an Ubuntu system. Skipping installation."
