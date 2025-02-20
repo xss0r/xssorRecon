@@ -82,7 +82,9 @@ display_options() {
     echo -e "${YELLOW}9: Exit${NC}"
     echo -e "${YELLOW}10: Guide to Deploying xss0r on VPS Servers${NC}"
     echo -e "${YELLOW}11: Path-based XSS${NC}"
+    echo -e "${YELLOW}12: Domains Search Inputs${NC}"
 }
+
 
 # Function to display Guide to Deploying xss0r on VPS Servers information with better formatting and crystal-like color
 show_vps_info() {
@@ -1832,7 +1834,7 @@ echo -e "${BOLD_BLUE}Appended URLs saved and combined into ${domain_name}-query.
 # Step 3: Checking page reflection on the URLs
 if [ -f "reflection.py" ]; then
     echo -e "${BOLD_WHITE}Checking page reflection on the URLs with command: python3 reflection.py ${domain_name}-query.txt --threads 2${NC}"
-    sudo python3 reflection.py "${domain_name}-query.txt" --threads 5 || handle_error "reflection.py execution"
+    sudo python3 reflection.py "${domain_name}-query.txt" --threads 2 || handle_error "reflection.py execution"
     sleep 5
 
     # Check if xss.txt is created after reflection.py
@@ -1882,62 +1884,12 @@ if [ -f "reflection.py" ]; then
             echo -e "${BOLD_WHITE}Initial Total Merged URLs in the beginning : ${RED}${total_merged_urls}${NC}"
             echo -e "${BOLD_WHITE}Filtered Final URLs for XSS Testing: ${RED}${total_urls}${NC}"
 
-            # Sorting URLs for xss0r
-echo -e "${BOLD_BLUE}Sorting valid format URLs for xss0r...${NC}"
-
-# Add www to http/https URLs and sort uniquely
-awk '{sub("http://", "http://www."); sub("https://", "https://www."); print}' xss-urls.txt | sort -u > sorted-xss-urls.txt
-
-# Validate the first 10 URLs with www
-echo -e "${BOLD_BLUE}Validating the first 10 URLs with 'http://www.'...${NC}"
-counter=0
-invalid_found=false
-
-while IFS= read -r url && [ "$counter" -lt 10 ]; do
-    # Check if the URL is reachable
-    status=$(curl -sL -o /dev/null -w "%{http_code}" "$url")
-    
-    if [[ "$status" -eq 000 ]]; then
-        echo -e "Invalid URL detected: $url (Connection failed)"
-        invalid_found=true
-        break
-    else
-        # Check the page title or body for specific errors
-        response=$(curl -sL "$url")
-        title=$(echo "$response" | grep -oP '(?<=<title>).*?(?=</title>)')
-        
-        if echo "$response" | grep -q "Hmm. We’re having trouble finding that site." || [[ "$title" == "Server Not Found" ]]; then
-            echo -e "Invalid URL detected: $url (Error page found)"
-            invalid_found=true
-            break
-        fi
-    fi
-
-    counter=$((counter + 1))
-done < sorted-xss-urls.txt
-
-# Normalize URLs if invalid URL found
-if $invalid_found; then
-    echo -e "${BOLD_BLUE}Adjusting all URLs to remove 'www.'...${NC}"
-    awk '{sub("http://www.", "http://"); sub("https://www.", "https://"); print}' sorted-xss-urls.txt > adjusted-xss-urls.txt
-    mv adjusted-xss-urls.txt xss-urls.txt
-else
-    echo -e "${BOLD_BLUE}No invalid URLs detected. Keeping 'www.' format.${NC}"
-    mv sorted-xss-urls.txt xss-urls.txt
-fi
-
-# Cleanup
-rm -f sorted-xss-urls.txt
-echo -e "${BOLD_BLUE}URL sorting completed!${NC}"
-
-
-# Start a new process group
-set -m
-
-# Safely kill processes related to xss0r
-pkill -f '^\.\/xss0r(\s|$)' || pkill -f 'xss0rdriver' || pkill -f 'google-chrome' || echo -e "${YELLOW}No xss0r-related tasks were running.${NC}"
-echo -e "Cleaned Tasks Before Run!${NC}"
-
+            #Sorting URLs for xss0r:
+            echo -e "${BOLD_BLUE}Sorting valid format URLs for xss0r...${NC}"
+            awk '{sub("http://", "http://www."); sub("https://", "https://www."); print}' xss-urls.txt | sort -u > sorted-xss-urls.txt
+            rm -r xss-urls.txt
+            mv sorted-xss-urls.txt xss-urls.txt
+            sleep 5
 
 
             # Automatically run the xss0r command after reflection step
@@ -1951,7 +1903,6 @@ echo -e "Cleaned Tasks Before Run!${NC}"
 else
     echo -e "${RED}reflection.py not found in the current directory. Skipping page reflection step.${NC}"
 fi
-
 }
 
 # Function to run step 8 (Launching xss0r Tool)
@@ -2088,7 +2039,7 @@ run_path_based_xss() {
 
     # Step 9: Running Python script for reflection checks
     show_progress "Running Python script for reflection checks on filtered URLs..."
-    sudo python3 path-reflection.py path-ready.txt --threads 3
+    sudo python3 path-reflection.py path-ready.txt --threads 2
 
     # Step 9.1: Checking if the new file is generated
     if [ -f path-xss-urls.txt ]; then
@@ -2114,13 +2065,6 @@ run_path_based_xss() {
 
     echo -e "${CYAN}Intermediate files deleted. Final output is $output_file.${NC}"
 
-    # Start a new process group
-    set -m
-
-# Safely kill processes related to xss0r
-pkill -f '^\.\/xss0r(\s|$)' || pkill -f 'xss0rdriver' || pkill -f 'google-chrome' || echo -e "${YELLOW}No xss0r-related tasks were running.${NC}"
-echo -e "Cleaned Tasks Before Run!${NC}"
-
     # Step 12: Launch the xss0r tool for path-based XSS testing
     echo -e "${BOLD_BLUE}Launching the xss0r tool on path-xss-urls.txt...${NC}"
     ./xss0r --get --urls path-xss-urls.txt --payloads payloads.txt --shuffle --threads 10 --path
@@ -2141,8 +2085,157 @@ trap_interrupt() {
 # Trap SIGINT (Ctrl+C)
 trap trap_interrupt SIGINT
 
+# Function for Domains Search Input with Query Appending
+run_domains_search_input() {
+    echo -e "${BOLD_WHITE}You selected: Domains Search Input with Query Appending${NC}"
 
-# Main script logic
+    # Define search queries
+    domains_queries=(
+        "search?q=aaa"
+        "?query=aaa"
+        "en-us/Search#/?search=aaa"
+        "Search/Results?q=aaa"
+        "q=aaa"
+        "search.php?query=aaa"
+        "en-us/search?q=aaa"
+        "s=aaa"
+        "find?q=aaa"
+        "result?q=aaa"
+        "query?q=aaa"
+        "search?term=aaa"
+        "search?query=aaa"
+        "search?keywords=aaa"
+        "search?text=aaa"
+        "search?word=aaa"
+        "find?query=aaa"
+        "result?query=aaa"
+        "search?input=aaa"
+        "search/results?query=aaa"
+        "search-results?q=aaa"
+        "search?keyword=aaa"
+        "results?query=aaa"
+        "search?search=aaa"
+        "search?searchTerm=aaa"
+        "search?searchQuery=aaa"
+        "search?searchKeyword=aaa"
+        "search.php?q=aaa"
+        "search/?query=aaa"
+        "search/?q=aaa"
+        "search/?search=aaa"
+        "search.aspx?q=aaa"
+        "search.aspx?query=aaa"
+        "search.asp?q=aaa"
+        "index.asp?id=aaa"
+        "dashboard.asp?user=aaa"
+        "blog/search/?query=aaa"
+        "pages/searchpage.aspx?id=aaa"
+        "search.action?q=aaa"
+        "search.json?q=aaa"
+        "search/index?q=aaa"
+        "lookup?q=aaa"
+        "browse?q=aaa"
+        "search-products?q=aaa"
+        "products/search?q=aaa"
+        "news?q=aaa"
+        "articles?q=aaa"
+        "content?q=aaa"
+        "explore?q=aaa"
+        "search/advanced?q=aaa"
+        "search-fulltext?q=aaa"
+        "products?query=aaa"
+        "search?product=aaa"
+        "catalog/search?q=aaa"
+        "store/search?q=aaa"
+        "shop?q=aaa"
+        "items?query=aaa"
+        "search?q=aaa&category=aaa"
+        "store/search?term=aaa"
+        "marketplace?q=aaa"
+        "blog/search?q=aaa"
+        "news?query=aaa"
+        "articles?search=aaa"
+        "topics?q=aaa"
+        "stories?q=aaa"
+        "newsfeed?q="
+        "search-posts?q=aaa"
+        "blog/posts?q=aaa"
+        "search/article?q=aaa"
+        "/api/search?q=aaa"
+        "en/search/explore?q=aaa"
+        "bs-latn-ba/Search/Results?q=aaa"
+        "en-us/marketplace/apps?search=aaa"
+        "v1/search?q=aaa"
+        "search/node?keys=aaaa"
+        "api/v1/search?q=aaa"
+    )
+
+    normalize_domain() {
+        local domain="$1"
+        domain=$(echo "$domain" | tr '[:upper:]' '[:lower:]' | sed 's/^http:\/\///' | sed 's/^https:\/\///' | sed 's/^www\.//')
+        echo "http://$domain"
+    }
+
+    append_and_save() {
+        local domain="$1"
+        local output_file="$2"
+        normalized_domain=$(normalize_domain "$domain")
+        for query in "${domains_queries[@]}"; do
+            if [[ $query == /* ]]; then
+                echo "$normalized_domain$query" >> "$output_file"
+            else
+                echo "$normalized_domain/$query" >> "$output_file"
+            fi
+        done
+    }
+
+    # Prompt for domains file
+    read -p "Enter the path to your domains .txt file: " domains_file
+    if [[ ! -f $domains_file ]]; then
+        echo -e "${RED}The file does not exist.${NC}"
+        return
+    fi
+
+    # Prepare output file
+    output_file="appended-domains.txt"
+    > "$output_file"
+
+    echo -e "${BOLD_BLUE}Processing domains from $domains_file and appending queries...${NC}"
+
+    # Process each domain and append queries
+    while IFS= read -r domain || [[ -n "$domain" ]]; do
+        append_and_save "$domain" "$output_file"
+    done < "$domains_file"
+
+    echo -e "${BOLD_GREEN}All domains appended with queries and saved to $output_file.${NC}"
+
+    # Run the reflection.py script
+    reflection_script="reflection.py"
+if [[ -f $reflection_script ]]; then
+    echo -e "${BOLD_BLUE}Formatting URLs in $output_file to http://www format...${NC}"
+    
+    # Preprocess $output_file to ensure all URLs are in the http://www format
+    temp_file="formatted_$output_file"
+    awk -F'://' '{print "http://www." $2}' "$output_file" > "$temp_file"
+    
+    # Replace the original file with the formatted version
+    mv "$temp_file" "$output_file"
+    
+    echo -e "${BOLD_GREEN}URLs formatted successfully.${NC}"
+    echo -e "${BOLD_BLUE}Running reflection.py on $output_file...${NC}"
+    sudo python3 "$reflection_script" "$output_file" --threads 3
+    echo -e "${BOLD_GREEN}Reflection done, new domains saved in the file xss.txt.${NC}"
+
+        # Run the xss0r command
+        if [[ -x ./xss0r ]]; then
+            echo -e "${BOLD_BLUE}Running xss0r Tool:${NC}"
+            ./xss0r --get --urls xss.txt --payloads payloads.txt --shuffle --threads 10
+        else
+            echo -e "${RED}xss0r executable not found in the current directory.${NC}"
+        fi
+    else
+        echo -e "${RED}Reflection script $reflection_script not found.${NC}"
+    fi
+}
 
 while true; do
     # Display options
@@ -2233,7 +2326,13 @@ while true; do
             echo -e "${BOLD_WHITE}You selected: Guide to Deploying xss0r on VPS Servers${NC}"
             show_vps_info
             ;;
-        11) # Execute Path-based XSS
+       11) # Execute Path-based XSS
+            run_path_based_xss
+            last_completed_option=11
+            ;;
+        12) # Domains Search Input
+            run_domains_search_input
+            last_completed_option=12
             run_path_based_xss
             last_completed_option=11
             ;;
