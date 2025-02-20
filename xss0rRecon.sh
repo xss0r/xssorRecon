@@ -2240,7 +2240,7 @@ if [[ -f $reflection_script ]]; then
 while true; do
     # Display options
     display_options
-    read -p "Enter your choice [1-11]: " choice
+    read -p "Enter your choice [1-12]: " choice
 
     # Check if the selected option is in the correct order
     if [[ $choice -ge 2 && $choice -le 8 && $choice -ne 4 ]]; then
