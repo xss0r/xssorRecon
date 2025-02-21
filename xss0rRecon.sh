@@ -2192,7 +2192,7 @@ run_domains_search_input() {
     # Prompt for domains file
     read -p "Enter the path to your domains .txt file: " domains_file
     if [[ ! -f $domains_file ]]; then
-        echo -e "${RED}The file does not exist.${NC}"
+        echo -e "${RED}The file does not exist - Please use your domains file {domain}-domains.txt.${NC}"
         return
     fi
 
