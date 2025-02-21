@@ -2334,8 +2334,6 @@ while true; do
         12) # Domains Search Input
             run_domains_search_input
             last_completed_option=12
-            run_path_based_xss
-            last_completed_option=11
             ;;
         *)
             echo "Invalid option. Please select a number between 1 and 11."
