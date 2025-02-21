@@ -83,10 +83,10 @@ def check_reflection(url, output_file):
                 save_reflected_url(url, param, modified_params, output_file)
 
     except requests.exceptions.Timeout:
-        print(f"{RED}[!] Timeout: {url}{RESET}")
+        print(f"{RED}[!] Connection Timeout: {url}{RESET}")
         time.sleep(2)
-    except requests.exceptions.RequestException as e:
-        print(f"{RED}[!] Error: {url} - {str(e)}{RESET}")
+    except requests.exceptions.RequestException:
+        print(f"{RED}[!] Connection Timeout: {url}{RESET}")
         time.sleep(2)
     finally:
         processed_urls += 1
