@@ -571,6 +571,7 @@ if [ ! -d "SubProber" ]; then
 
         # Install from local cloned repository
         sudo pip install . --break-system-packages --root-user-action=ignore
+        pip install subprober aiojarm
         subprober -up
 
         # Clean up by removing the cloned directory after installation
