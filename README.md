@@ -1,6 +1,7 @@
 xss0rRecon
 
 Welcome to the xss0rRecon tool repository! 🚀
+Installation Guide: https://xss0r.medium.com/tool-overview-6c255fe7ec9b
 
 To use xss0rRecon effectively, it's essential that all required files are downloaded and placed in the same folder. Follow the instructions below to get started.
 🛠️ Setup Instructions:
