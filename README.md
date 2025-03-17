@@ -8,7 +8,8 @@ To use xss0rRecon effectively, it's essential that all required files are downlo
 
     Download the necessary files:
         Visit https://store.xss0r.com 
-        Choose a plan (the PRO plan is free!).
+        Choose a plan (the PRO plan is free!). - From the 10th to the 15th of each month, we provide a 5-day free license for the Professional plan, allowing users to explore the tool before committing to a purchase. The license details are listed below and will remain active only during this period. After the 15th, the license will expire.
+
         Download all the tools, wordlists, and the xss0r tool.
 
     Extract everything:
