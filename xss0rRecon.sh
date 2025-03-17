@@ -883,6 +883,14 @@ else
         echo -e "${RED}Failed to build Waybackurls from source.${NC}"
         cd ..
         rm -rf waybackurls
+        deactivate
+        rm -rf .venv
+        python3 -m venv .venv
+        source .venv/bin/activate
+        pip install --upgrade pip setuptools wheel
+        pip install git+https://github.com/RevoltSecurities/Dnsbruter
+        pip install git+https://github.com/RevoltSecurities/Subprober
+        pip install aiodns aiofiles alive_progress art asynciolimiter colorama requests uvloop
         exit 1
     fi
 fi
