@@ -883,7 +883,14 @@ else
         echo -e "${RED}Failed to build Waybackurls from source.${NC}"
         cd ..
         rm -rf waybackurls
+        pip uninstall pipx
+        rm -rf /usr/local/bin/pipx
+        rm -rf ~/.local/bin/pipx
+        rm -rf ~/.local/pipx
         deactivate
+        python3 -m pip install --user pipx
+        python3 -m pipx ensurepath
+        source ~/.bashrc
         rm -rf .venv
         python3 -m venv .venv
         source .venv/bin/activate
