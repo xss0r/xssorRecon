@@ -894,6 +894,11 @@ else
         rm -rf .venv
         python3 -m venv .venv
         source .venv/bin/activate
+        pipx uninstall uro
+        pip uninstall uro 
+        pipx install uro
+        pip install --user uro
+        export PATH=$HOME/.local/bin:$PATH
         pip install --upgrade pip setuptools wheel
         pip install git+https://github.com/RevoltSecurities/Dnsbruter
         pip install git+https://github.com/RevoltSecurities/Subprober
