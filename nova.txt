@@ -2,6 +2,13 @@ www
 mail
 ftp
 localhost
+id
+admin
+administracija
+panel
+nacelnik
+vijece
+12
 webmail
 smtp
 webdisk
