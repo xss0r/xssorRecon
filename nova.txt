@@ -46,21 +46,6 @@ demo
 dns2
 ns4
 dns1
-static
-lists
-webocks: 0
-[+] Parameter detected: adminpass, based on: body length (4819 -> 170)         
-[*] Tested 1295/10985 parameters | Found: 16 | Blocks: 0
-[+] Parameter detected: adminpass2, based on: body length (4819 -> 170)        
-[*] Tested 1296/10985 parameters | Found: 17 | Blocks: 0
-[+] Parameter detected: adminpassword, based on: body length (4819 -> 170)     
-[*] Tested 1300/10985 parameters | Found: 18 | Blocks: 0
-[*] Rate limiting: Sleeping for 3 seconds...
-[*] Tested 1400/10985 parameters | Found: 18 | Blocks: 0
-[*] Rate limiting: Sleeping for 3 seconds...
-
-
-
 www1
 img
 news
@@ -82,6 +67,3 @@ host
 video
 mail1
 mx1
-www3
-staging
-www.m
